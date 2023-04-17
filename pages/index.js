@@ -16,19 +16,19 @@ export default function Home(){
   const [ laptops, setLaptops ] = useState([])
   
   async function firebaseFindProducts(category){
-    switch(category){
-      case "Electronics":
+    
     let q = query(collection(db, "products"), where("category", "==", category), limit(4))
     let items = await getDocs(q)
-    items.forEach((item) => {
-      let product = { id: item.id, data: item.data() }
-      setProducts(products => [...products, product ])
-    })
+    
+    switch(category){
+      case "Electronics":
+        items.forEach((item) => {
+          let product = { id: item.id, data: item.data() }
+          setProducts(products => [...products, product ])
+          })
      break;
       
       case "Books":
-        let q = query(collection(db, "products"), where("category", "==", category), limit(4))
-        let items = await getDocs(q)
         items.forEach((item) => {
           let product = { id: item.id, data: item.data() }
           setBooks(products => [...products, product ])
@@ -36,8 +36,6 @@ export default function Home(){
       break;
       
       case "Earbuds":
-        let q = query(collection(db, "products"), where("category", "==", category), limit(4))
-       let items = await getDocs(q)
        items.forEach((item) => {
          let product = { id: item.id, data: item.data() }
          setEarbuds(products => [...products, product ])
@@ -45,8 +43,6 @@ export default function Home(){
       break;
       
       case "Laptops":
-        let q = query(collection(db, "products"), where("category", "==", category), limit(4))
-        let items = await getDocs(q)
         items.forEach((item) => {
           let product = { id: item.id, data: item.data() }
           setLaptops(products => [...products, product ])
@@ -78,13 +74,13 @@ useEffect(()=>{
       <div className="flex flex-row flex-wrap justify-center items-center">
       {/* box container */}
       <div className="flex flex-col justify-evenly p-2 m-6 bg-gray-200 h-84 w-84 md:w-96 rounded-xl">
-      <span className="text-left text-xl font-bold">Earbuds</span>
+      <span className="text-left text-xl font-bold">Electronics</span>
       <div className="flex flex-row justify-evenly items-center flex-wrap p-2">
       {/* smaller box */}
       {products.map(item =>{
       return(
       <Link href={`/product/${item.id}`}>
-      <div  className="flex flex-col justify-evenly items-center m-2 hover:scale-125 transition-all duration-150 ease-out">
+      <div className="flex flex-col justify-evenly items-center m-2 hover:scale-125 transition-all duration-150 ease-out">
       <img className="bg-white object-contain h-28 w-28 rounded-lg border border-black" src={item.data.photo} />
       <span id="rubik" className="text-lg font-bold">{item.data.name}</span>
       <span className="text-sm font-bold text-left">${item.data.price}<span className="line-through text-sm font-light">${item.data.discount}</span></span>
@@ -92,23 +88,36 @@ useEffect(()=>{
       </Link>
       )
       })} 
+      </div>
+      </div>
+      
+     {/* box container */}
+      <div className="flex flex-col justify-evenly p-2 m-4 bg-gray-200 h-84 w-84 md:w-96 rounded-xl">
+      <span className="text-left text-xl font-bold">Books</span>
+      <div className="flex flex-row justify-evenly items-center flex-wrap p-2">
       {/* smaller box */}
       {books.map(item =>{
       return(
       <Link href={`/product/${item.id}`}>
-      <div  className="flex flex-col justify-evenly items-center m-2 hover:scale-125 transition-all duration-150 ease-out">
+      <div  className="flex flex-col justify-evenly items-center m-2 w-32 hover:scale-125 transition-all duration-150 ease-out">
       <img className="bg-white object-contain h-28 w-28 rounded-lg border border-black" src={item.data.photo} />
-      <span id="rubik" className="text-lg font-bold">{item.data.name}</span>
+      <span id="rubik" className=" text-lg font-bold">{item.data.name}</span>
       <span className="text-sm font-bold text-left">${item.data.price}<span className="line-through text-sm font-light">${item.data.discount}</span></span>
       </div>
       </Link>
       )
       })} 
+      </div>
+      </div>
       {/* smaller box */}
+      {/* box container */}
+      <div className="flex flex-col justify-evenly m-6 bg-gray-200 h-84 w-84 md:w-96 rounded-xl">
+      <span className="text-left text-xl font-bold">Earbuds</span>
+      <div className="flex flex-row justify-evenly items-center flex-wrap p-2">
       {earbuds.map(item =>{
       return(
       <Link href={`/product/${item.id}`}>
-      <div  className="flex flex-col justify-evenly items-center m-2 hover:scale-125 transition-all duration-150 ease-out">
+      <div  className="flex flex-col justify-evenly items-center m-2 w-32 hover:scale-125 transition-all duration-150 ease-out">
       <img className="bg-white object-contain h-28 w-28 rounded-lg border border-black" src={item.data.photo} />
       <span id="rubik" className="text-lg font-bold">{item.data.name}</span>
       <span className="text-sm font-bold text-left">${item.data.price}<span className="line-through text-sm font-light">${item.data.discount}</span></span>
@@ -116,21 +125,27 @@ useEffect(()=>{
       </Link>
       )
       })} 
+      </div>
+      </div>
+      {/* box container */}
+      <div className="flex flex-col justify-evenly m-6 bg-gray-200 h-84 w-84 md:w-96 rounded-xl">
+      <span className="text-left text-xl font-bold">Laptops</span>
+      <div className="flex flex-row justify-evenly items-center flex-wrap p-2">
       {/* smaller box */}
       {laptops.map(item =>{
       return(
       <Link href={`/product/${item.id}`}>
-      <div  className="flex flex-col justify-evenly items-center m-2 hover:scale-125 transition-all duration-150 ease-out">
+      <div  className="flex flex-col justify-evenly items-center w-32 m-2 hover:scale-125 transition-all duration-150 ease-out">
       <img className="bg-white object-contain h-28 w-28 rounded-lg border border-black" src={item.data.photo} />
       <span id="rubik" className="text-lg font-bold">{item.data.name}</span>
       <span className="text-sm font-bold text-left">${item.data.price}<span className="line-through text-sm font-light">${item.data.discount}</span></span>
       </div>
       </Link>
       )
-      })} 
+      })}
       </div>
       </div>
-      </div>
+       </div>
       </main>
   )
 }
