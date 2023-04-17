@@ -11,18 +11,55 @@ export default function Home(){
   
   const [ open, setOpen ] = useState(false)
   const [ products, setProducts ] = useState([])
+  const [ books, setBooks ] = useState([])
+  const [ earbuds, setEarbuds ] = useState([])
+  const [ laptops, setLaptops ] = useState([])
   
-  async function firebaseFindProducts(){
-    let q = query(collection(db, "products"), where("category", "==", "Electronics"), limit(4))
+  async function firebaseFindProducts(category){
+    switch(category){
+      case "Electronics":
+    let q = query(collection(db, "products"), where("category", "==", category), limit(4))
     let items = await getDocs(q)
     items.forEach((item) => {
       let product = { id: item.id, data: item.data() }
       setProducts(products => [...products, product ])
-     });
+    })
+     break;
+      
+      case "Books":
+        let q = query(collection(db, "products"), where("category", "==", category), limit(4))
+        let items = await getDocs(q)
+        items.forEach((item) => {
+          let product = { id: item.id, data: item.data() }
+          setBooks(products => [...products, product ])
+        })
+      break;
+      
+      case "Earbuds":
+        let q = query(collection(db, "products"), where("category", "==", category), limit(4))
+       let items = await getDocs(q)
+       items.forEach((item) => {
+         let product = { id: item.id, data: item.data() }
+         setEarbuds(products => [...products, product ])
+       });
+      break;
+      
+      case "Laptops":
+        let q = query(collection(db, "products"), where("category", "==", category), limit(4))
+        let items = await getDocs(q)
+        items.forEach((item) => {
+          let product = { id: item.id, data: item.data() }
+          setLaptops(products => [...products, product ])
+        })
+        break;
+    }
   }
   
 useEffect(()=>{
-    firebaseFindProducts();
+    firebaseFindProducts("Electronics");
+    firebaseFindProducts("Books");
+    firebaseFindProducts("Earbuds");
+    firebaseFindProducts("Laptops");
 },[])
   
   return (
@@ -45,6 +82,42 @@ useEffect(()=>{
       <div className="flex flex-row justify-evenly items-center flex-wrap p-2">
       {/* smaller box */}
       {products.map(item =>{
+      return(
+      <Link href={`/product/${item.id}`}>
+      <div  className="flex flex-col justify-evenly items-center m-2 hover:scale-125 transition-all duration-150 ease-out">
+      <img className="bg-white object-contain h-28 w-28 rounded-lg border border-black" src={item.data.photo} />
+      <span id="rubik" className="text-lg font-bold">{item.data.name}</span>
+      <span className="text-sm font-bold text-left">${item.data.price}<span className="line-through text-sm font-light">${item.data.discount}</span></span>
+      </div>
+      </Link>
+      )
+      })} 
+      {/* smaller box */}
+      {books.map(item =>{
+      return(
+      <Link href={`/product/${item.id}`}>
+      <div  className="flex flex-col justify-evenly items-center m-2 hover:scale-125 transition-all duration-150 ease-out">
+      <img className="bg-white object-contain h-28 w-28 rounded-lg border border-black" src={item.data.photo} />
+      <span id="rubik" className="text-lg font-bold">{item.data.name}</span>
+      <span className="text-sm font-bold text-left">${item.data.price}<span className="line-through text-sm font-light">${item.data.discount}</span></span>
+      </div>
+      </Link>
+      )
+      })} 
+      {/* smaller box */}
+      {earbuds.map(item =>{
+      return(
+      <Link href={`/product/${item.id}`}>
+      <div  className="flex flex-col justify-evenly items-center m-2 hover:scale-125 transition-all duration-150 ease-out">
+      <img className="bg-white object-contain h-28 w-28 rounded-lg border border-black" src={item.data.photo} />
+      <span id="rubik" className="text-lg font-bold">{item.data.name}</span>
+      <span className="text-sm font-bold text-left">${item.data.price}<span className="line-through text-sm font-light">${item.data.discount}</span></span>
+      </div>
+      </Link>
+      )
+      })} 
+      {/* smaller box */}
+      {laptops.map(item =>{
       return(
       <Link href={`/product/${item.id}`}>
       <div  className="flex flex-col justify-evenly items-center m-2 hover:scale-125 transition-all duration-150 ease-out">
