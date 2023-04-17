@@ -79,7 +79,7 @@ useEffect(()=>{
       {/* smaller box */}
       {products.map(item =>{
       return(
-      <Link href={`/product/${item.id}`}>
+      <Link href={`/product/${item.id}?category=${item.data.category}`}>
       <div className="flex flex-col justify-evenly items-center m-2 hover:scale-125 transition-all duration-150 ease-out">
       <img className="bg-white object-contain h-28 w-28 rounded-lg border border-black" src={item.data.photo} />
       <span id="rubik" className="text-lg font-bold">{item.data.name}</span>
@@ -98,7 +98,7 @@ useEffect(()=>{
       {/* smaller box */}
       {books.map(item =>{
       return(
-      <Link href={`/product/${item.id}`}>
+      <Link href={`/product/${item.id}?category=${item.data.category}`}>
       <div  className="flex flex-col justify-evenly items-center m-2 w-32 hover:scale-125 transition-all duration-150 ease-out">
       <img className="bg-white object-contain h-28 w-28 rounded-lg border border-black" src={item.data.photo} />
       <span id="rubik" className=" text-lg font-bold">{item.data.name}</span>
@@ -116,7 +116,7 @@ useEffect(()=>{
       <div className="flex flex-row justify-evenly items-center flex-wrap p-2">
       {earbuds.map(item =>{
       return(
-      <Link href={`/product/${item.id}`}>
+      <Link href={`/product/${item.id}?category=${item.data.category}`}>
       <div  className="flex flex-col justify-evenly items-center m-2 w-32 hover:scale-125 transition-all duration-150 ease-out">
       <img className="bg-white object-contain h-28 w-28 rounded-lg border border-black" src={item.data.photo} />
       <span id="rubik" className="text-lg font-bold">{item.data.name}</span>
@@ -134,7 +134,7 @@ useEffect(()=>{
       {/* smaller box */}
       {laptops.map(item =>{
       return(
-      <Link href={`/product/${item.id}`}>
+      <Link href={`/product/${item.id}?category=${item.data.category}`}>
       <div  className="flex flex-col justify-evenly items-center w-32 m-2 hover:scale-125 transition-all duration-150 ease-out">
       <img className="bg-white object-contain h-28 w-28 rounded-lg border border-black" src={item.data.photo} />
       <span id="rubik" className="text-lg font-bold">{item.data.name}</span>

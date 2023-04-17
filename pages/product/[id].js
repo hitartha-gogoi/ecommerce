@@ -8,7 +8,7 @@ import { collection, getDoc, getDocs, doc, documentId, where, query } from "fire
 export default function Product(){
   
   const router = useRouter()
-  let { id } = router.query
+  let { id, category } = router.query
   const [ product, setProduct ] = useState({})
   const [ products, setProducts ] = useState([])
   
@@ -22,8 +22,8 @@ export default function Product(){
     })
   }
   
-  async function firebaseFindProducts(){
-    let q = query(collection(db, "products"), where("category", "==", "Electronics"))
+  async function firebaseFindProducts(category){
+    let q = query(collection(db, "products"), where("category", "==", category))
     let items = await getDocs(q)
     items.forEach((item) => {
       let product = { id: item.id, data: item.data() }
@@ -35,7 +35,7 @@ export default function Product(){
   useEffect(()=>{
     if(!router.isReady) return;
     firebaseGetProduct(id);
-    firebaseFindProducts();
+    firebaseFindProducts(category);
   },[id])
   
   const redirectToProduct = (itemId)=>{
