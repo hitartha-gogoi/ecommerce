@@ -4,19 +4,17 @@ import Link from "next/link"
 import router from "next/router"
 import { useRouter } from "next/router"
 import { db, auth } from "../components/firebase"
+import OrderForm from "../components/orderForm"
 import { collection, getDoc, getDocs, doc, documentId, where, query, updateDoc, setDoc, deleteDoc, addDoc, arrayUnion, arrayRemove, serverTimestamp } from "firebase/firestore"
 
 export default function Cart() {
-  
+
   let product;
   const deliveryCharge = 0;
   let existingCartItem = false;
   const [ subtotal, setSubTotal ] = useState(0)
   const [ cart, setCart ] = useState([]);
-  const [ address, setAddress ] = useState("");
-  const [ pincode, setPinCode ] = useState("");
-  const [ state, setState ] = useState("");
-  const [ phoneNumber, setPhoneNumber ] = useState(0);
+  const [ isOpen, setIsOpen ] = useState(false)
   const [ status, setStatus ] = useState("dispatching your product");
   
   useEffect(()=>{
@@ -78,6 +76,7 @@ export default function Cart() {
         deleteDoc(doc(db, "cart", item?.id))
         .then(result =>{
           setCart([]);
+          setSubTotal(0)
           getCart([]);
         })
         .catch(err => console.log(err))
@@ -86,11 +85,12 @@ export default function Cart() {
   }
   
   
-  async function order(){
+  async function order(address,state,pincode,phoneNumber){
     cart.forEach(item =>{
     addDoc(collection(db, 'orders'), {
         product: item.data.product,
         user: auth.currentUser.uid,
+        seller: item.data.seller,
         name: item.data.name,
         photo: item.data.photo,
         category: item.data.category,
@@ -108,6 +108,21 @@ export default function Cart() {
         .then(res =>  console.log("order created", result.id, result));
     }).catch(err => console.log(err));
     })
+    
+    const sellerRef = await getDoc(doc(db, "users", product.seller))
+    const customerRef = await getDoc(doc(db, "users", auth.currentUser.email))
+    const seller = sellerRef.data()
+    const customer = customerRef.data();
+      if(window.Email){
+       await window.Email.send({
+          SecureToken: "c5ab9116-48a2-4f13-b0c6-dacf50baeba7",
+          To: seller.email,
+          From: "arnabgogoi83@gmail.com",
+          Subject: "This is the subject",
+          Body: "And this is the body"
+        }).then(message => console.log(message))
+        .catch(error => console.log(error))
+      }
    // alert("order completed")
     router.push("/orders")
   }
@@ -116,7 +131,7 @@ export default function Cart() {
   return (
     <main className="text-black bg-gray-700 w-screen h-screen bg-gray-700">
     <Navbar />
-
+    <OrderForm modal={isOpen} close={()=> setIsOpen(false)} order={order} />
   <div className="flex flex-col items-center w-full h-full">
   {/* cart header */}
   <div className="w-full h-12 text-lg font-bold text-white flex flex-row justify-center items-center p-2">
@@ -184,7 +199,10 @@ delete
   </div>
   
  {/* proceed to checkout */}
-  <button onClick={order} className="w-72 h-14 bg-gray-800 border-2 border-gray-900 text-white font-bold text-center text-lg rounded-lg mt-2 mb-2 hover:scale-105 transition-all ease-in-out duration-150">{subtotal === 0 ? "Explore Products":"Proceed to Checkout" }</button> 
+ 
+ {subtotal === 0 ? <button onClick={()=> router.push("/")} className="w-72 h-14 bg-gray-800 border-2 border-gray-900 text-white font-bold text-center text-lg rounded-lg mt-2 mb-2 hover:scale-105 transition-all ease-in-out duration-150">Explore Products </button> :
+  <button onClick={()=> setIsOpen(true)} className="w-72 h-14 bg-gray-800 border-2 border-gray-900 text-white font-bold text-center text-lg rounded-lg mt-2 mb-2 hover:scale-105 transition-all ease-in-out duration-150">Proceed to Checkout </button>
+ }
   </div>
   
 </div>

@@ -3,6 +3,7 @@ import Navbar from "../../components/navbar"
 import Link from "next/link"
 import { useRouter } from "next/router"
 import { db, auth } from "../../components/firebase"
+import OrderForm from "../../components/orderForm"
 import { collection, getDoc, getDocs, doc, addDoc, documentId, where, query, updateDoc, setDoc, deleteDoc, serverTimestamp } from "firebase/firestore"
 
 export default function Product(){
@@ -10,12 +11,9 @@ export default function Product(){
   const router = useRouter()
   let { id, category } = router.query
   const [ product, setProduct ] = useState({})
-  const [ products, setProducts ] = useState([])
-  const [ address, setAddress ] = useState("");
-  const [ pincode, setPinCode ] = useState("");
-  const [ state, setState ] = useState("");
-  const [ phoneNumber, setPhoneNumber ] = useState(0);
+  const [ products, setProducts ] = useState([]);
   const [ status, setStatus ] = useState("dispatching your product");
+  const [ isOpen, setIsOpen ] = useState(false)
   let existingCartItem = false;
   
   
@@ -55,6 +53,7 @@ export default function Product(){
       const docRef = await addDoc(collection(db, 'cart'), {
         product: itemId,
         user: auth.currentUser.uid,
+        seller: product.seller,
         name: itemName,
         photo: itemPhoto,
         category: itemCategory,
@@ -66,25 +65,43 @@ export default function Product(){
     }
   }
   
-  async function order(){
-   const docSnap = await addDoc(collection(db, 'orders'), {
+  async function order(address,state,pincode,phoneNumber){
+    const docSnap = await addDoc(collection(db, 'orders'), {
         product: id,
         user: auth.currentUser.uid,
+        seller: product.seller,
         name: product.name,
         photo: product.photo,
         category: product.category,
         quantity: Number(1),
-        price: Number(product.discount),
-        total: Number(product.discount),
+        price: Number(product.price),
+        total: Number(product.price),
         address: address,
         state: state,
         pincode: pincode,
         phonenumber: phoneNumber,
         timestamp: serverTimestamp(),
       })
-   // await alert("order completed")
-    await router.push("/orders")
+      
+    const sellerRef = await getDoc(doc(db, "users", product.seller))
+    const customerRef = await getDoc(doc(db, "users", auth.currentUser.email))
+    const seller = sellerRef.data()
+    const customer = customerRef.data();
+      if(window.Email){
+       await window.Email.send({
+          SecureToken: "c5ab9116-48a2-4f13-b0c6-dacf50baeba7",
+          To: seller.email,
+          From: "arnabgogoi83@gmail.com",
+          Subject: "This is the subject",
+          Body: "And this is the body"
+        }).then(message => console.log(message))
+        .catch(error => console.log(error))
+      }
+   // alert("order completed")
+    router.push("/orders")
   }
+  
+  
   
   useEffect(()=>{
     if(!router.isReady) return;
@@ -99,6 +116,7 @@ export default function Product(){
   return(
     <main className="w-screen h-screen bg-white">
     <Navbar />
+   <OrderForm modal={isOpen} close={()=> setIsOpen(false)} order={order} />
     <div className="flex flex-col items-center flex-wrap w-full pb-2">
   <div className="flex flex-row justify-evenly flex-wrap w-full md:mt-12 items-center">
     <div>
@@ -134,7 +152,7 @@ export default function Product(){
   </div>
   <div className="flex flex-row w-84 ml-2">
       <button onClick={()=> addToCart(id, product.name, product.photo, product.discount, product.category)} className="text-white text-center font-bold bg-black h-14 w-40 rounded-lg mr-2 mt-4 hover:scale-125 transition-all ease-in-out duration-150">add to cart</button>
-      <button onClick={order} className="text-black text-center font-bold bg-white h-14 w-40 mt-4 rounded-lg border-gray-700 border hover:scale-125 transition-all ease-in-out duration-150">buy now</button>
+      <button onClick={()=> setIsOpen(true)} className="text-black text-center font-bold bg-white h-14 w-40 mt-4 rounded-lg border-gray-700 border hover:scale-125 transition-all ease-in-out duration-150">buy now</button>
   </div>
  
   <p className="bg-white text-left text-black text-sm font-light pt-4 pb-4 mt-4 mb-4 border-y border-gray-700 flex flex-col md:w-72">

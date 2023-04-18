@@ -1,13 +1,14 @@
 import { useState, useEffect, useRef } from "react"
 import { getAuth, signInWithPopup, GoogleAuthProvider, onAuthStateChanged, sendEmailVerification, signOut } from "firebase/auth";
 import { db, auth } from "./firebase"
-import { getDocs, collection, query, where } from "firebase/firestore";
+import { getDocs, collection, query, where, doc, setDoc } from "firebase/firestore";
 import { XIcon } from "@heroicons/react/outline"
 
 export default function Modal({ open, close }){
   
   if(!open) return;
   
+  const [ isLoggedIn, setLoggedIn ] = useState(false)
   const [ user, setUser ] = useState({})
   
  const checkAuth = ()=>{
@@ -17,10 +18,12 @@ export default function Modal({ open, close }){
       let username = client.displayName;
       let pfp = client.photoURL;
       let email = client.email;
-      setUser(client)
+      setUser(client);
+      setLoggedIn(true)
       } else {
         setUser({})
-        console.log("user is logged out")
+        setLoggedIn(false)
+        console.log("user is logged out", isLoggedIn)
         }
     })
  }
@@ -39,12 +42,15 @@ export default function Modal({ open, close }){
       const token = credential.accessToken;
       const client = result.user;
       setUser(client);
+      setDoc(doc(db, "users", client.uid), { 
+        id: client.uid,
+        pfp: client.photoURL,
+        username: client.displayName,
+        email: client.email
+      }, { merge: true })
+      .then(res => console.log(res))
+      .catch(err => console.log(err));
       checkAuth();
-      /*
-      let q = query(collection(db, "users"), where("email", "==", user.email))
-      let existingUser = await getDocs(q)
-      console.log(existingUser);
-      */
     }).catch(error =>{
       console.log(error);
     })
@@ -77,7 +83,7 @@ export default function Modal({ open, close }){
     <button className="flex flex-row justify-center items-center text-white text-center font-bold bg-black h-10 w-60 mt-2 rounded-lg border-gray-700 border hover:scale-105 transition-all ease-in-out duration-150">
       <span className="material-symbols-outlined">support_agent</span> Help & Support</button>
       
-      {!user? <>
+      {isLoggedIn ? <>
     <button className="flex  flex-row justify-center items-center text-white text-center font-bold bg-black h-10 w-60 mt-2 rounded-lg border-gray-700 border hover:scale-105 transition-all ease-in-out duration-150" onClick={logout}>
       <span className="material-symbols-outlined">logout</span> Logout </button> </>
       : <>

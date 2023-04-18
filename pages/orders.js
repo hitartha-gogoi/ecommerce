@@ -11,7 +11,7 @@ export default function Orders() {
   const [ orders, setOrders ] = useState([])
   
   async function getOrders(){
-    let q = query(collection(db, "orders"),  orderBy("timestamp","asc"), where("user", "==", auth.currentUser.uid))
+    let q = query(collection(db, "orders"),  orderBy("timestamp","desc"), where("user", "==", auth.currentUser.uid))
     let items = await getDocs(q)
     items.forEach((item) => {
       let newCart = { id: item.id, data: item.data() }
