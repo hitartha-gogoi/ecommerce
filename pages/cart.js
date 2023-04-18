@@ -108,7 +108,7 @@ export default function Cart() {
         .then(res =>  console.log("order created", result.id, result));
     }).catch(err => console.log(err));
     })
-    alert("order completed")
+   // alert("order completed")
     router.push("/orders")
   }
   

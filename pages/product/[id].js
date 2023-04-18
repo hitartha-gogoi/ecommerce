@@ -82,7 +82,7 @@ export default function Product(){
         phonenumber: phoneNumber,
         timestamp: serverTimestamp(),
       })
-    await alert("order completed")
+   // await alert("order completed")
     await router.push("/orders")
   }
   

@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import Navbar from "../components/navbar"
+import router from "next/router"
 import { useRouter } from "next/router"
 import { db, auth } from "../components/firebase"
 import { collection, getDoc, getDocs, doc, documentId, where, query, orderBy } from "firebase/firestore"
@@ -10,7 +11,7 @@ export default function Orders() {
   const [ orders, setOrders ] = useState([])
   
   async function getOrders(){
-    let q = query(collection(db, "orders"), /* orderBy("timestamp","asc"),*/ where("user", "==", auth.currentUser.uid))
+    let q = query(collection(db, "orders"),  orderBy("timestamp","asc"), where("user", "==", auth.currentUser.uid))
     let items = await getDocs(q)
     items.forEach((item) => {
       let newCart = { id: item.id, data: item.data() }
@@ -43,7 +44,7 @@ export default function Orders() {
       return(
   <div className="flex flex-row justify-between h-18 w-full md:3/5 border-gray-700 border bg-white rounded-lg hover:scale-105 transition-all ease-in-out duration-150 shadow-md mb-2">
   {/* left box */}
-  <div className="flex h-18 w-96">
+  <div onClick={()=> router.push(`/product/${item.data.product}?category=${item.data.category}`)} className="flex h-18 w-96">
   <img src={item.data.photo} className="object-contain h-16 w-16 rounded-lg" />
   <div className="flex flex-col justify-center items-center ml-2 ">
   <span className="text-md text-left font-bold">{item.data.name}</span>
