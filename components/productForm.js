@@ -71,7 +71,7 @@ uploadTask.on('state_changed',
   
   return(
           <div className="fixed top-0 left-0 right-0 bottom-0 backdrop-brightness-50 z-50 flex justify-center items-center">
-           <div className="flex flex-col shadow-2xl bg-white h-4/5 md:h-4/5 w-80  rounded-2xl cursor-pointer shadow-indigo-500">
+           <div className="flex flex-col shadow-2xl bg-white h-4/5  w-80  rounded-2xl cursor-pointer shadow-indigo-500">
                <div className="flex flex-row justify-between items-center w-full">
                <span />
                <span className="material-symbols-outlined" onClick={close}>close</span>
@@ -92,7 +92,7 @@ uploadTask.on('state_changed',
           <option value="3">Tools </option>
         </select>
         <h3 className="text-black text-md font-semibold m-2">Describe</h3>
-        <textarea value={desc} onChange={(e)=> setDesc(e.target.value)} className="text-gray-400 rounded-md shadow bg-gray-100 appearance-none text-md border border-gray-300 w-72 h-24 mx-2 focus:outline-none focus:shadow-outline focus:border-purple-500 leading-tight" placeholder="describe your product" />
+        <textarea value={desc} onChange={(e)=> setDesc(e.target.value)} className="text-gray-400 rounded-md shadow bg-gray-100 appearance-none text-md border border-gray-300 w-72 h-24 md:h-12 mx-2 focus:outline-none focus:shadow-outline focus:border-purple-500 leading-tight" placeholder="describe your product" />
          <button type="submit"  id="title" className="text-center h-8 w-4/5 my-4 bg-purple-700 text-white font-extrabold text-lg rounded flex justify-center items-center shadow-2xl self-center"> send </button>
           </form>
           </div>
