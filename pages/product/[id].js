@@ -3,7 +3,7 @@ import Navbar from "../../components/navbar"
 import Link from "next/link"
 import { useRouter } from "next/router"
 import { db, auth } from "../../components/firebase"
-import { collection, getDoc, getDocs, doc, documentId, where, query } from "firebase/firestore"
+import { collection, getDoc, getDocs, doc, addDoc, documentId, where, query, updateDoc, setDoc, deleteDoc } from "firebase/firestore"
 
 export default function Product(){
   
@@ -11,14 +11,15 @@ export default function Product(){
   let { id, category } = router.query
   const [ product, setProduct ] = useState({})
   const [ products, setProducts ] = useState([])
+  let existingCartItem = false;
+  
   
   async function firebaseGetProduct(productId){
     let q = query(collection(db,"products"), where(documentId(), "==", productId));
-    let product = await getDocs(q);
-    console.log(product);
-    product.forEach(item =>{
-      console.log(item, item.data());
-      setProduct(item.data());
+    let docSnap = await getDocs(q);
+    docSnap.forEach(item =>{
+      setProduct(item.data())
+      console.log(item.id)
     })
   }
   
@@ -31,6 +32,36 @@ export default function Product(){
      });
   }
   
+  async function addToCart(itemId, itemName, itemPhoto, itemPrice, itemCategory){
+    console.log(itemId, itemName, itemPhoto, itemPrice, itemCategory)
+    let q = query(collection(db, "cart"),where("user", "==", auth.currentUser.uid), where("product", "==", itemId))
+    let existingCartItems = await getDocs(q);
+    existingCartItems.forEach(item =>{
+      existingCartItem = true
+      updateDoc(doc(db, "cart", item?.id), {
+      quantity: item.data().quantity + 1,
+      total: item.data().total + Number(itemPrice)
+    }).then(result =>{
+      console.log("cart updated", result)
+    })
+    })
+    console.log("Do this item exist in user's cart? ", existingCartItem)
+    if(!existingCartItem){
+      console.log("inside if statment checks if the cart item exist so that stops right there ", existingCartItem)
+      const docRef = await addDoc(collection(db, 'cart'), {
+        product: itemId,
+        user: auth.currentUser.uid,
+        name: itemName,
+        photo: itemPhoto,
+        category: itemCategory,
+        quantity: Number(1),
+        price: Number(itemPrice),
+        total: Number(itemPrice),
+      })
+      await alert("new product added to cart", docRef.id)
+    }
+  }
+  
   
   useEffect(()=>{
     if(!router.isReady) return;
@@ -38,9 +69,9 @@ export default function Product(){
     firebaseFindProducts(category);
   },[id])
   
-  const redirectToProduct = (itemId)=>{
+  const redirectToProduct = (itemId, itemCategory)=>{
    // setProducts([])
-    router.push(`/product/${itemId}`)
+    router.push(`/product/${itemId}?category=${itemCategory}`)
   }
   
   return(
@@ -80,7 +111,7 @@ export default function Product(){
     
   </div>
   <div className="flex flex-row w-84 ml-2">
-      <button  className="text-white text-center font-bold bg-black h-14 w-40 rounded-lg mr-2 mt-4 hover:scale-125 transition-all ease-in-out duration-150">add to cart</button>
+      <button onClick={()=> addToCart(id, product.name, product.photo, product.price, product.category)} className="text-white text-center font-bold bg-black h-14 w-40 rounded-lg mr-2 mt-4 hover:scale-125 transition-all ease-in-out duration-150">add to cart</button>
       <button className="text-black text-center font-bold bg-white h-14 w-40 mt-4 rounded-lg border-gray-700 border hover:scale-125 transition-all ease-in-out duration-150">buy now</button>
   </div>
  
@@ -98,12 +129,12 @@ export default function Product(){
   {products.map(item =>{
     return(
     <div className="flex flex-col justify-evenly items-center hover:scale-105 transition-all ease-in-out duration-150 border-2 border-gray-700 p-2 rounded-lg bg-gray-100 ml-2 mr-2">
-        <img onClick={()=> redirectToProduct(item.id)} src={item.data.photo} className="object-contain h-36 w-36 mb-2 rounded-lg" />
+        <img onClick={()=> redirectToProduct(item.id, item.category)} src={item.data.photo} className="object-contain h-36 w-36 mb-2 rounded-lg" />
        <div className="flex flex-col">
          <span onClick={()=> redirectToProduct(item.id)} className="text-left font-bold text-md text-black">{item.data.name}</span>
          <span onClick={()=> redirectToProduct(item.id)} className="text-left text-black text-sm">{item.data.discount} <span className="font-light line-through">{item.data.price}</span></span>
   
-         <button className="text-white text-center font-bold bg-black h-10 w-32 rounded-lg mr-2 mt-4 hover:scale-105 transition-all ease-in-out duration-150">add to cart</button>
+         <button onClick={()=> addToCart(item.id, item.data.name, item.data.photo, item.data.price, item.data.category)} className="text-white text-center font-bold bg-black h-10 w-32 rounded-lg mr-2 mt-4 hover:scale-105 transition-all ease-in-out duration-150">add to cart</button>
        </div>
     </div>
   )

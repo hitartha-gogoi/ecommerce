@@ -1,6 +1,18 @@
+import { useState, useEffect, useRef } from "react";
 import Navbar from "../components/navbar"
+import { useRouter } from "next/router"
+import { db, auth } from "../components/firebase"
+import { collection, getDoc, getDocs, doc, documentId, where, query } from "firebase/firestore"
+
 
 export default function Orders() {
+  
+  const [ orders, setOrders ] = useState([])
+  
+ useEffect(()=>{
+   
+ },[])
+  
   return (
     <main className="text-black bg-gray-700 w-screen h-screen bg-gray-700">
   <Navbar />
