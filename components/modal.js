@@ -75,8 +75,10 @@ export default function Modal({ open, close }){
     <span />
     <span className="material-symbols-outlined" onClick={close}>close</span>
     </div>
-    <img className="h-20 w-20 rounded-full" src="https://plus.unsplash.com/premium_photo-1668418188837-d40b734ed6d2?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxzZWFyY2h8MXx8ZWFyYnVkc3xlbnwwfHwwfHw%3D&auto=format&fit=crop&w=700&q=60" />
-    <span id="username-span" className="font-bold text-lg mt-2">Hitartha Gogoi</span>
+    {isLoggedIn ? <>
+    <img className="h-20 w-20 rounded-full" src={user.photoURL}/>
+    <span id="username-span" className="font-bold text-lg mt-2">{user.displayName}</span> </> : <span />
+    }
     <button className="flex flex-row justify-center items-center  text-white text-center font-bold bg-black h-10 w-60 mt-2 rounded-lg border-gray-700 border hover:scale-105 transition-all ease-in-out duration-150"><span className="material-symbols-outlined">settings</span> Settings</button>
     <button className="flex flex-row justify-center items-center text-white text-center font-bold bg-black h-10 w-60 mt-2 rounded-lg border-gray-700 border hover:scale-105 transition-all ease-in-out duration-150">
       <span className="material-symbols-outlined">article</span> Privacy & Policy</button>

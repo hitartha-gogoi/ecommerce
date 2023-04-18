@@ -21,7 +21,7 @@ export default function OrderForm({ modal, close, order }){
   
   return(
           <div className="fixed top-0 left-0 right-0 bottom-0 backdrop-brightness-50 z-50 flex justify-center items-center ">
-           <div className="flex flex-col shadow-2xl bg-white h-4/5 md:h-2/5 w-80  rounded-2xl cursor-pointer shadow-indigo-500">
+           <div className="flex flex-col shadow-2xl bg-white h-4/5 md:h-4/5 w-80  rounded-2xl cursor-pointer shadow-indigo-500">
                <div className="flex flex-row justify-between items-center w-full">
                <span />
                <span className="material-symbols-outlined" onClick={close}>close</span>
