@@ -4,7 +4,7 @@ import Link from "next/link"
 import router from "next/router"
 import { useRouter } from "next/router"
 import { db, auth } from "../components/firebase"
-import { collection, getDoc, getDocs, doc, documentId, where, query, updateDoc, setDoc, deleteDoc } from "firebase/firestore"
+import { collection, getDoc, getDocs, doc, documentId, where, query, updateDoc, setDoc, deleteDoc, addDoc, arrayUnion, arrayRemove, serverTimestamp } from "firebase/firestore"
 
 export default function Cart() {
   
@@ -13,6 +13,11 @@ export default function Cart() {
   let existingCartItem = false;
   const [ subtotal, setSubTotal ] = useState(0)
   const [ cart, setCart ] = useState([]);
+  const [ address, setAddress ] = useState("");
+  const [ pincode, setPinCode ] = useState("");
+  const [ state, setState ] = useState("");
+  const [ phoneNumber, setPhoneNumber ] = useState(0);
+  const [ status, setStatus ] = useState("dispatching your product");
   
   useEffect(()=>{
     getCart();
@@ -41,6 +46,7 @@ export default function Cart() {
     }).then(result =>{
       console.log("cart updated", result)
       setCart([])
+      setSubTotal(0);
       getCart();
     })
     })
@@ -61,19 +67,18 @@ export default function Cart() {
     }).then(result =>{
       console.log("cart updated", result)
       setCart([])
+      setSubTotal(0)
       getCart()
     })
       }
     })
-    console.log("Do this item exist in user's cart? ", existingCartItem)
     if(!existingCartItem){
       let existingCartItems = await getDocs(q);
       existingCartItems.forEach(item =>{
         deleteDoc(doc(db, "cart", item?.id))
         .then(result =>{
-          alert("deleted")
-          setCart([])
-          getCart([])
+          setCart([]);
+          getCart([]);
         })
         .catch(err => console.log(err))
     })
@@ -82,13 +87,29 @@ export default function Cart() {
   
   
   async function order(){
-    const docRef = await addDoc(collection(db, 'cart'), {
+    cart.forEach(item =>{
+    addDoc(collection(db, 'orders'), {
+        product: item.data.product,
         user: auth.currentUser.uid,
-      // products: []
-      //  quantity: 1,
-      //  total: total
+        name: item.data.name,
+        photo: item.data.photo,
+        category: item.data.category,
+        quantity: Number(item.data.quantity),
+        price: Number(item.data.price),
+        total: Number(item.data.total),
+        address: address,
+        state: state,
+        pincode: pincode,
+        phonenumber: phoneNumber,
+        timestamp: serverTimestamp(),
       })
-      await alert("added to cart", docRef.id)
+      .then(result =>{
+        deleteDoc(doc(db, "cart", item?.id))
+        .then(res =>  console.log("order created", result.id, result));
+    }).catch(err => console.log(err));
+    })
+    alert("order completed")
+    router.push("/orders")
   }
   
   
@@ -163,7 +184,7 @@ delete
   </div>
   
  {/* proceed to checkout */}
-  <button onClick={order} className="w-72 h-14 bg-gray-800 border-2 border-gray-900 text-white font-bold text-center text-lg rounded-lg mt-2 mb-2 hover:scale-105 transition-all ease-in-out duration-150">Proceed to Checkout</button> 
+  <button onClick={order} className="w-72 h-14 bg-gray-800 border-2 border-gray-900 text-white font-bold text-center text-lg rounded-lg mt-2 mb-2 hover:scale-105 transition-all ease-in-out duration-150">{subtotal === 0 ? "Explore Products":"Proceed to Checkout" }</button> 
   </div>
   
 </div>

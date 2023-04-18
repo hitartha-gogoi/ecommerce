@@ -3,7 +3,7 @@ import Navbar from "../../components/navbar"
 import Link from "next/link"
 import { useRouter } from "next/router"
 import { db, auth } from "../../components/firebase"
-import { collection, getDoc, getDocs, doc, addDoc, documentId, where, query, updateDoc, setDoc, deleteDoc } from "firebase/firestore"
+import { collection, getDoc, getDocs, doc, addDoc, documentId, where, query, updateDoc, setDoc, deleteDoc, serverTimestamp } from "firebase/firestore"
 
 export default function Product(){
   
@@ -11,6 +11,11 @@ export default function Product(){
   let { id, category } = router.query
   const [ product, setProduct ] = useState({})
   const [ products, setProducts ] = useState([])
+  const [ address, setAddress ] = useState("");
+  const [ pincode, setPinCode ] = useState("");
+  const [ state, setState ] = useState("");
+  const [ phoneNumber, setPhoneNumber ] = useState(0);
+  const [ status, setStatus ] = useState("dispatching your product");
   let existingCartItem = false;
   
   
@@ -45,7 +50,6 @@ export default function Product(){
       console.log("cart updated", result)
     })
     })
-    console.log("Do this item exist in user's cart? ", existingCartItem)
     if(!existingCartItem){
       console.log("inside if statment checks if the cart item exist so that stops right there ", existingCartItem)
       const docRef = await addDoc(collection(db, 'cart'), {
@@ -62,6 +66,25 @@ export default function Product(){
     }
   }
   
+  async function order(){
+   const docSnap = await addDoc(collection(db, 'orders'), {
+        product: id,
+        user: auth.currentUser.uid,
+        name: product.name,
+        photo: product.photo,
+        category: product.category,
+        quantity: Number(1),
+        price: Number(product.discount),
+        total: Number(product.discount),
+        address: address,
+        state: state,
+        pincode: pincode,
+        phonenumber: phoneNumber,
+        timestamp: serverTimestamp(),
+      })
+    await alert("order completed")
+    await router.push("/orders")
+  }
   
   useEffect(()=>{
     if(!router.isReady) return;
@@ -70,7 +93,6 @@ export default function Product(){
   },[id])
   
   const redirectToProduct = (itemId, itemCategory)=>{
-   // setProducts([])
     router.push(`/product/${itemId}?category=${itemCategory}`)
   }
   
@@ -111,8 +133,8 @@ export default function Product(){
     
   </div>
   <div className="flex flex-row w-84 ml-2">
-      <button onClick={()=> addToCart(id, product.name, product.photo, product.price, product.category)} className="text-white text-center font-bold bg-black h-14 w-40 rounded-lg mr-2 mt-4 hover:scale-125 transition-all ease-in-out duration-150">add to cart</button>
-      <button className="text-black text-center font-bold bg-white h-14 w-40 mt-4 rounded-lg border-gray-700 border hover:scale-125 transition-all ease-in-out duration-150">buy now</button>
+      <button onClick={()=> addToCart(id, product.name, product.photo, product.discount, product.category)} className="text-white text-center font-bold bg-black h-14 w-40 rounded-lg mr-2 mt-4 hover:scale-125 transition-all ease-in-out duration-150">add to cart</button>
+      <button onClick={order} className="text-black text-center font-bold bg-white h-14 w-40 mt-4 rounded-lg border-gray-700 border hover:scale-125 transition-all ease-in-out duration-150">buy now</button>
   </div>
  
   <p className="bg-white text-left text-black text-sm font-light pt-4 pb-4 mt-4 mb-4 border-y border-gray-700 flex flex-col md:w-72">
@@ -134,7 +156,7 @@ export default function Product(){
          <span onClick={()=> redirectToProduct(item.id)} className="text-left font-bold text-md text-black">{item.data.name}</span>
          <span onClick={()=> redirectToProduct(item.id)} className="text-left text-black text-sm">{item.data.discount} <span className="font-light line-through">{item.data.price}</span></span>
   
-         <button onClick={()=> addToCart(item.id, item.data.name, item.data.photo, item.data.price, item.data.category)} className="text-white text-center font-bold bg-black h-10 w-32 rounded-lg mr-2 mt-4 hover:scale-105 transition-all ease-in-out duration-150">add to cart</button>
+         <button onClick={()=> addToCart(item.id, item.data.name, item.data.photo, item.data.discount, item.data.category)} className="text-white text-center font-bold bg-black h-10 w-32 rounded-lg mr-2 mt-4 hover:scale-105 transition-all ease-in-out duration-150">add to cart</button>
        </div>
     </div>
   )
