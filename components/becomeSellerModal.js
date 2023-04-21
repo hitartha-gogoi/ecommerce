@@ -18,9 +18,9 @@ export default function BecomeSellerModal({ modal, close, forward }){
                <span className="material-symbols-outlined" onClick={close}>close</span>
                </div>
           <form onSubmit={submitForm} className="flex flex-col justify-center items-start px-4">
-      {/*  <Link href="/seller"> */}
+       <Link href="/seller"> 
          <button type="submit" id="title" className="text-center h-8 w-4/5 my-4 bg-purple-700 text-white font-extrabold text-lg rounded flex justify-center items-center shadow-2xl self-center hover:scale-105 transition-all ease-in-out duration-150"> Become a seller </button>
-     {/*    </Link> */}
+        </Link> 
           </form>
           
           </div>
