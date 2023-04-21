@@ -1,13 +1,12 @@
-import router from "next/link"
-import { useState, useEffect, useRef } from "react"
+import Link from "next/link";
 
-export default function BecomeSellerModal({ modal, close }){
+export default function BecomeSellerModal({ modal, close, forward }){
   if(!modal) return;
  
  
   const submitForm = (e)=>{
     e.preventDefault();
-    router.push(`/seller?id=1`);
+    forward();
     close();
   } 
   
@@ -19,9 +18,11 @@ export default function BecomeSellerModal({ modal, close }){
                <span className="material-symbols-outlined" onClick={close}>close</span>
                </div>
           <form onSubmit={submitForm} className="flex flex-col justify-center items-start px-4">
-            
+      {/*  <Link href="/seller"> */}
          <button type="submit" id="title" className="text-center h-8 w-4/5 my-4 bg-purple-700 text-white font-extrabold text-lg rounded flex justify-center items-center shadow-2xl self-center hover:scale-105 transition-all ease-in-out duration-150"> Become a seller </button>
+     {/*    </Link> */}
           </form>
+          
           </div>
         </div>
     )

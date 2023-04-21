@@ -1,6 +1,8 @@
 import Navbar from "../components/navbar"
+import { useState, useEffect, useRef } from "react"
 import BecomeSellerModal from "../components/becomeSellerModal"
 import Link from "next/link";
+import router from "next/router"
 import InstagramIcon from '@mui/icons-material/Instagram';
 import TwitterIcon from '@mui/icons-material/Twitter';
 import { FaDiscord } from 'react-icons/fa';
@@ -14,7 +16,7 @@ export default function Bio() {
   return (
     <main className="bg-white h-screen w-screen">
    <Navbar />
-   <BecomeSellerModal modal={open} close={()=> setOpen(false)} />
+   <BecomeSellerModal modal={open} close={()=> setOpen(false)} forward={()=> router.push("/seller")} />
       <div className="flex flex-col justify-center items-center w-screen h-screen bg-white mt-72 pt-96 md:mt-2">
       
       
