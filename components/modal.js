@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from "react"
 import { getAuth, signInWithPopup, GoogleAuthProvider, onAuthStateChanged, sendEmailVerification, signOut } from "firebase/auth";
 import { db, auth } from "./firebase"
 import { getDocs, collection, query, where, doc, setDoc } from "firebase/firestore";
+import router from "next/router"
 import { XIcon } from "@heroicons/react/outline"
 
 export default function Modal({ open, close }){
@@ -93,7 +94,8 @@ export default function Modal({ open, close }){
       <span className="material-symbols-outlined">logout</span> Sign In using Google </button>
       </>
       }
-      
+      <button onClick={()=> router.push("/bio")} className="flex flex-row justify-center items-center text-white text-center font-bold bg-black h-10 w-60 mt-2 rounded-lg border-gray-700 border hover:scale-105 transition-all ease-in-out duration-150">
+      <span  className="material-symbols-outlined">support_agent</span> Become a seller </button>
   </div>  
   
 </div>

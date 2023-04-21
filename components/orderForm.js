@@ -86,7 +86,7 @@ export default function OrderForm({ modal, close, order }){
           <option value="2">Maharashtra</option>
           <option value="3">Rajasthan </option>
         </select>
-        <button onClick={handlePayment} id="title" className="text-center h-8 w-4/5 my-4 bg-purple-700 text-white font-extrabold text-lg rounded flex justify-center items-center shadow-2xl self-center hover:scale-105 transition-all ease-in-out duration-150"> pay now </button>
+        <button onClick={handlePayment} id="title" className="text-center h-8 w-4/5 my-4 bg-purple-700 text-white font-extrabold text-lg rounded flex juçstify-center items-center shadow-2xl self-center hover:scale-105 transition-all ease-in-out duration-150"> pay now </button>
          <button type="submit" id="title" className="text-center h-8 w-4/5 my-4 bg-purple-700 text-white font-extrabold text-lg rounded flex justify-center items-center shadow-2xl self-center hover:scale-105 transition-all ease-in-out duration-150"> Order Now </button>
           </form>
           </div>
