@@ -169,7 +169,7 @@ export default function Product(){
   {products.map(item =>{
     return(
     <div className="flex flex-col justify-evenly items-center hover:scale-105 transition-all ease-in-out duration-150 border-2 border-gray-700 p-2 rounded-lg bg-gray-100 ml-2 mr-2">
-        <img onClick={()=> redirectToProduct(item.id, item.category)} src={item.data.photo} className="object-contain h-36 w-36 mb-2 rounded-lg" />
+        <img onClick={()=> redirectToProduct(item.id, item.data.category)} src={item.data.photo} className="object-contain h-36 w-36 mb-2 rounded-lg" />
        <div className="flex flex-col">
          <span onClick={()=> redirectToProduct(item.id)} className="text-left font-bold text-md text-black">{item.data.name}</span>
          <span onClick={()=> redirectToProduct(item.id)} className="text-left text-black text-sm">{item.data.discount} <span className="font-light line-through">{item.data.price}</span></span>
