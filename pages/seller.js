@@ -2,10 +2,11 @@ import { useState, useEffect, useRef } from "react";
 import Navbar from "../components/navbar"
 import ProductForm from "../components/productForm"
 import { Line } from 'react-chartjs-2';
-import { useRouter } from "next/router"
+import router, { useRouter } from "next/router"
 import CheckAuthPopup from "../components/checkAuthPopup"
 import { onAuthStateChanged } from "firebase/auth";
 import { db, auth } from "../components/firebase"
+import { collection, getDoc, getDocs, doc, documentId, where, query, updateDoc, setDoc, deleteDoc, addDoc, arrayUnion, arrayRemove, serverTimestamp } from "firebase/firestore"
 
 import {
   Chart as ChartJS,
@@ -45,21 +46,79 @@ export default function Seller(){
   const router = useRouter()
   let { id } = router.query
   const [ open, setOpen ] = useState(false)
+  const [ orders, setOrders ] = useState([])
+  const [ products, setProducts ] = useState([])
+  const [ status, setStatus ] = useState("");
   const [ isLoggedIn, setLoggedIn ] = useState(true)
+  const [ seller, setSeller ] = useState(null)
+  
+    async function getUser(){
+    let q = query(collection(db,"users"), where("id", "==", auth.currentUser.uid));
+    let docSnap = await getDocs(q);
+    docSnap.forEach(client =>{
+      setSeller(client.data().type === "seller")
+      console.log(client.data().type === "seller")
+      if(client.data().type === "seller"){
+        findProducts();
+        getOrders();
+      } else {
+        router.push("/bio")
+      }
+    })
+  }
   
   const checkAuth = ()=>{
    onAuthStateChanged(auth, (client) => {
       if (client) {
       console.log(client)
       setLoggedIn(true)
-      //getOrders()
+      getUser();
       } else {
         setLoggedIn(false)
         console.log("user is logged out", isLoggedIn)
       }
     })
  }
+ 
+ async function getOrders(){
+    let q = query(collection(db, "orders"),  orderBy("timestamp","desc"), where("seller", "==", auth.currentUser.uid))
+    let items = await getDocs(q)
+    items.forEach((item) => {
+      let newCart = { id: item.id, data: item.data() }
+      setOrders(cart => [...cart, newCart ])
+     })
+  }
+ 
+ async function findProducts(){
+    let q = query(collection(db, "products"), where("seller", "==", auth.currentUser.uid))
+    let items = await getDocs(q)
+    items.forEach((item) => {
+      let product = { id: item.id, data: item.data() }
+      setProducts(products => [...products, product ])
+    })
+ }
+ 
+ async function deleteProduct(productId){
+   let q = query(collection(db, "products"),where("seller", "==", auth.currentUser.uid), where("product", "==", productId))
+   let items = await getDocs(q);
+   items.forEach(item =>{
+     deleteDoc(doc(db, "products", item?.id))
+    .then(result =>{
+      setProducts([])
+      findProducts();
+    })
+    .catch(err => console.log(err))
+    })
+ }
   
+async function editOrder(orderId){
+  setDoc(doc(db, "orders", orderId), { 
+        status:  status
+      }, { merge: true })
+      .then(res => console.log(res))
+      .catch(err => console.log(err))
+}
+
   useEffect(()=>{
     checkAuth();
   },[])
@@ -114,6 +173,10 @@ export default function Seller(){
 <button className="w-28 h-12 bg-blue-500 text-black font-bold hover:scale-105 border border-black bg-white transition-all ease-in-out duration-150 p-2">orders</button>
 <button className="w-28 h-12 bg-blue-500 text-black font-bold hover:scale-105 border border-black bg-white transition-all ease-in-out duration-150 p-2">orders</button>
 </div>
+</div>
+
+<div className="flex flex-col items-center">
+
 </div>
 
     </main>
