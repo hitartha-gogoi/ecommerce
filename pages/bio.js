@@ -8,14 +8,32 @@ import TwitterIcon from '@mui/icons-material/Twitter';
 import { FaDiscord } from 'react-icons/fa';
 import { AiFillGithub } from "react-icons/ai"
 import { BsMedium, BsStackOverflow } from "react-icons/bs"
+import{ onAuthStateChanged } from "firebase/auth";
+import { db, auth } from "../components/firebase"
+import CheckAuthPopup from "../components/checkAuthPopup"
 
 export default function Bio() {
   
   const [ open, setOpen ] = useState(false)
+  const [ isLoggedIn, setLoggedIn ] = useState(true)
+    
+ const checkAuth = ()=>{
+   onAuthStateChanged(auth, (client) => {
+      if (client) {
+      console.log(client)
+      setLoggedIn(true)
+      } else {
+        setLoggedIn(false)
+        console.log("user is logged out", isLoggedIn)
+      }
+    })
+ }
+  
   
   return (
     <main className="bg-white h-screen w-screen">
    <Navbar />
+   <CheckAuthPopup open={isLoggedIn} close={()=> setLoggedIn(true)} />
    <BecomeSellerModal modal={open} close={()=> setOpen(false)} forward={()=> router.push("/seller")} />
       <div className="flex flex-col justify-center items-center w-screen h-screen bg-white mt-72 pt-96 md:mt-2">
       

@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from "react"
 import { getAuth, signInWithPopup, GoogleAuthProvider, onAuthStateChanged, sendEmailVerification, signOut } from "firebase/auth";
 import { db, auth } from "./firebase"
-import { getDocs, collection, query, where, doc, setDoc } from "firebase/firestore";
+import { getDocs, collection, query, where, doc, setDoc, documentId } from "firebase/firestore";
 import router from "next/router"
 import { XIcon } from "@heroicons/react/outline"
 
@@ -10,21 +10,31 @@ export default function Modal({ open, close }){
   if(!open) return;
   
   const [ isLoggedIn, setLoggedIn ] = useState(false)
+  const [ seller, setSeller ] = useState(null)
   const [ user, setUser ] = useState({})
+  
+  async function getUser(){
+    let q = query(collection(db,"users"), where("id", "==", auth.currentUser.uid));
+    let docSnap = await getDocs(q);
+    docSnap.forEach(client =>{
+      setSeller(client.data().type === "seller")
+    })
+  }
   
  const checkAuth = ()=>{
    onAuthStateChanged(auth, (client) => {
       if (client) {
-      console.log(client)
+    //  console.log(client)
       let username = client.displayName;
       let pfp = client.photoURL;
       let email = client.email;
+      getUser();
       setUser(client);
       setLoggedIn(true)
       } else {
         setUser({})
         setLoggedIn(false)
-        console.log("user is logged out", isLoggedIn)
+     //   console.log("user is logged out")
         }
     })
  }
@@ -47,7 +57,8 @@ export default function Modal({ open, close }){
         id: client.uid,
         pfp: client.photoURL,
         username: client.displayName,
-        email: client.email
+        email: client.email,
+        type: "buyer"
       }, { merge: true })
       .then(res => console.log(res))
       .catch(err => console.log(err));
@@ -61,7 +72,7 @@ export default function Modal({ open, close }){
     signOut(auth).then(() => {
       setUser({})
       checkAuth();
-      console.log("Signout Successful")
+   //   console.log("Signout Successful")
     })
     .catch((error) => {
       console.log(error)
@@ -94,8 +105,14 @@ export default function Modal({ open, close }){
       <span className="material-symbols-outlined">logout</span> Sign In using Google </button>
       </>
       }
+      {!seller ?
       <button onClick={()=> router.push("/bio")} className="flex flex-row justify-center items-center text-white text-center font-bold bg-black h-10 w-60 mt-2 rounded-lg border-gray-700 border hover:scale-105 transition-all ease-in-out duration-150">
       <span  className="material-symbols-outlined">support_agent</span> Become a seller </button>
+      :
+      <button onClick={()=> router.push("/seller?id=1")} className="flex flex-row justify-center items-center text-white text-center font-bold bg-black h-10 w-60 mt-2 rounded-lg border-gray-700 border hover:scale-105 transition-all ease-in-out duration-150">
+      <span  className="material-symbols-outlined">support_agent</span> Seller's dashboard </button>
+      }
+      
   </div>  
   
 </div>

@@ -4,7 +4,8 @@ import { useState, useEffect, useRef } from "react"
 import { Inter } from 'next/font/google'
 import Navbar from "../components/navbar"
 import { db, auth } from "../components/firebase"
-import { onAuthStateChanged } from "firebase/auth"
+import CheckAuthPopup from "../components/checkAuthPopup"
+import { onAuthStateChanged } from "firebase/auth";
 import { collection, getDocs, query, where, limit } from "firebase/firestore"
 
 export default function Home(){

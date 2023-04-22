@@ -3,6 +3,8 @@ import Navbar from "../components/navbar"
 import ProductForm from "../components/productForm"
 import { Line } from 'react-chartjs-2';
 import { useRouter } from "next/router"
+import CheckAuthPopup from "../components/checkAuthPopup"
+import { onAuthStateChanged } from "firebase/auth";
 
 import {
   Chart as ChartJS,
@@ -42,6 +44,20 @@ export default function Seller(){
   const router = useRouter()
   let { id } = router.query
   const [ open, setOpen ] = useState(false)
+  const [ isLoggedIn, setLoggedIn ] = useState(true)
+  
+  const checkAuth = ()=>{
+   onAuthStateChanged(auth, (client) => {
+      if (client) {
+      console.log(client)
+      setLoggedIn(true)
+      //getOrders()
+      } else {
+        setLoggedIn(false)
+        console.log("user is logged out", isLoggedIn)
+      }
+    })
+ }
   
   let labels = ["Jan","Feb","Mar","Apr", "May","June","July"]
  const data = {
@@ -65,6 +81,7 @@ export default function Seller(){
   return(
     <main className="bg-white w-screen h-screen">
     <Navbar />
+    <CheckAuthPopup open={isLoggedIn} close={()=> setLoggedIn(true)} />
     <ProductForm open={open} close={()=> setOpen(false)} />
     <div className="flex flex-row justify-between flex-wrap">
     <div className="flex flex-col justify-start p-4">

@@ -5,6 +5,8 @@ import router from "next/router"
 import { useRouter } from "next/router"
 import { db, auth } from "../components/firebase"
 import OrderForm from "../components/orderForm"
+import CheckAuthPopup from "../components/checkAuthPopup"
+import { onAuthStateChanged } from "firebase/auth";
 import { collection, getDoc, getDocs, doc, documentId, where, query, updateDoc, setDoc, deleteDoc, addDoc, arrayUnion, arrayRemove, serverTimestamp } from "firebase/firestore"
 
 export default function Cart() {
@@ -16,9 +18,23 @@ export default function Cart() {
   const [ cart, setCart ] = useState([]);
   const [ isOpen, setIsOpen ] = useState(false)
   const [ status, setStatus ] = useState("dispatching your product");
+  const [ isLoggedIn, setLoggedIn ] = useState(true)
   
+ const checkAuth = ()=>{
+   onAuthStateChanged(auth, (client) => {
+      if (client) {
+      console.log(client)
+      setLoggedIn(true)
+      getCart()
+      } else {
+        setLoggedIn(false)
+        console.log("user is logged out", isLoggedIn)
+      }
+    })
+ }
+ 
   useEffect(()=>{
-    getCart();
+    checkAuth();
   },[])
   
   async function getCart(){
@@ -131,6 +147,7 @@ export default function Cart() {
   return (
     <main className="text-black bg-gray-700 w-screen h-screen bg-gray-700">
     <Navbar />
+   <CheckAuthPopup open={isLoggedIn} close={()=> setLoggedIn(true)} />
     <OrderForm modal={isOpen} close={()=> setIsOpen(false)} order={order} />
   <div className="flex flex-col items-center w-full h-full">
   {/* cart header */}

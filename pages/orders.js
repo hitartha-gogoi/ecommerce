@@ -3,12 +3,15 @@ import Navbar from "../components/navbar"
 import router from "next/router"
 import { useRouter } from "next/router"
 import { db, auth } from "../components/firebase"
+import CheckAuthPopup from "../components/checkAuthPopup"
+import { onAuthStateChanged } from "firebase/auth";
 import { collection, getDoc, getDocs, doc, documentId, where, query, orderBy } from "firebase/firestore"
 
 
 export default function Orders() {
   
   const [ orders, setOrders ] = useState([])
+  const [ isLoggedIn, setLoggedIn ] = useState(true)
   
   async function getOrders(){
     let q = query(collection(db, "orders"),  orderBy("timestamp","desc"), where("user", "==", auth.currentUser.uid))
@@ -19,13 +22,27 @@ export default function Orders() {
      })
   }
   
+  const checkAuth = ()=>{
+   onAuthStateChanged(auth, (client) => {
+      if (client) {
+      console.log(client)
+      setLoggedIn(true)
+      getOrders()
+      } else {
+        setLoggedIn(false)
+        console.log("user is logged out", isLoggedIn)
+      }
+    })
+ }
+  
  useEffect(()=>{
-   getOrders()
+   checkAuth();
  },[])
   
   return (
     <main className="text-black bg-gray-700 w-screen h-screen bg-gray-700">
   <Navbar />
+  <CheckAuthPopup open={isLoggedIn} close={()=> setLoggedIn(true)} />
     <div className="flex flex-col items-center w-full h-full">
   {/* cart header */}
   <div className="w-full h-12 text-lg font-bold text-white flex flex-row justify-center items-center p-2">

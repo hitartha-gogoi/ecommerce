@@ -1,13 +1,22 @@
 import Link from "next/link";
+import { db, auth } from "./firebase"
+import { getDocs, collection, query, where, doc, setDoc } from "firebase/firestore";
 
 export default function BecomeSellerModal({ modal, close, forward }){
   if(!modal) return;
  
- 
   const submitForm = (e)=>{
     e.preventDefault();
-    forward();
-    close();
+    
+    setDoc(doc(db, "users", auth.currentUser.uid), { 
+        type: "seller"
+      }, { merge: true })
+      .then(res =>{ 
+        console.log(res)
+        forward();
+        close();
+      })
+      .catch(err => console.log(err));
   } 
   
   return(
@@ -18,9 +27,9 @@ export default function BecomeSellerModal({ modal, close, forward }){
                <span className="material-symbols-outlined" onClick={close}>close</span>
                </div>
           <form onSubmit={submitForm} className="flex flex-col justify-center items-start px-4">
-       <Link href="/seller"> 
+      
          <button type="submit" id="title" className="text-center h-8 w-4/5 my-4 bg-purple-700 text-white font-extrabold text-lg rounded flex justify-center items-center shadow-2xl self-center hover:scale-105 transition-all ease-in-out duration-150"> Become a seller </button>
-        </Link> 
+        
           </form>
           
           </div>

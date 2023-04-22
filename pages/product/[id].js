@@ -2,7 +2,9 @@ import { useState, useEffect, useRef } from "react";
 import Navbar from "../../components/navbar"
 import Link from "next/link"
 import { useRouter } from "next/router"
+import{ onAuthStateChanged } from "firebase/auth";
 import { db, auth } from "../../components/firebase"
+import CheckAuthPopup from "../../components/checkAuthPopup"
 import OrderForm from "../../components/orderForm"
 import { collection, getDoc, getDocs, doc, addDoc, documentId, where, query, updateDoc, setDoc, deleteDoc, serverTimestamp } from "firebase/firestore"
 
@@ -14,7 +16,22 @@ export default function Product(){
   const [ products, setProducts ] = useState([]);
   const [ status, setStatus ] = useState("dispatching your product");
   const [ isOpen, setIsOpen ] = useState(false)
+  const [ isLoggedIn, setLoggedIn ] = useState(true)
   let existingCartItem = false;
+  
+ const checkAuth = ()=>{
+   onAuthStateChanged(auth, (client) => {
+      if (client) {
+      console.log(client)
+      setLoggedIn(true)
+      firebaseGetProduct(id);
+      firebaseFindProducts(category);
+      } else {
+        setLoggedIn(false)
+        console.log("user is logged out", isLoggedIn)
+      }
+    })
+ }
   
   
   async function firebaseGetProduct(productId){
@@ -105,8 +122,7 @@ export default function Product(){
   
   useEffect(()=>{
     if(!router.isReady) return;
-    firebaseGetProduct(id);
-    firebaseFindProducts(category);
+    checkAuth();
   },[id])
   
   const redirectToProduct = (itemId, itemCategory)=>{
@@ -116,6 +132,7 @@ export default function Product(){
   return(
     <main className="w-screen h-screen bg-white">
     <Navbar />
+    <CheckAuthPopup open={isLoggedIn} close={()=> setLoggedIn(true)} />
    <OrderForm modal={isOpen} close={()=> setIsOpen(false)} order={order} />
     <div className="flex flex-col items-center flex-wrap w-full pb-2">
   <div className="flex flex-row justify-evenly flex-wrap w-full md:mt-12 items-center">
