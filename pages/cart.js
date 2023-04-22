@@ -125,17 +125,17 @@ export default function Cart() {
     }).catch(err => console.log(err));
     })
     
-    const sellerRef = await getDoc(doc(db, "users", product.seller))
+   // const sellerRef = await getDoc(doc(db, "users", product.seller))
     const customerRef = await getDoc(doc(db, "users", auth.currentUser.email))
-    const seller = sellerRef.data()
+  //  const seller = sellerRef.data()
     const customer = customerRef.data();
       if(window.Email){
        await window.Email.send({
           SecureToken: "c5ab9116-48a2-4f13-b0c6-dacf50baeba7",
-          To: seller.email,
+          To: customer.email,
           From: "arnabgogoi83@gmail.com",
-          Subject: "This is the subject",
-          Body: "And this is the body"
+          Subject: "Ecommerce Purchase",
+          Body: "Thank you for shopping at Ecommerce"
         }).then(message => console.log(message))
         .catch(error => console.log(error))
       }
@@ -148,7 +148,7 @@ export default function Cart() {
     <main className="text-black bg-gray-700 w-screen h-screen bg-gray-700">
     <Navbar />
    <CheckAuthPopup open={isLoggedIn} close={()=> setLoggedIn(true)} />
-    <OrderForm modal={isOpen} close={()=> setIsOpen(false)} order={order} />
+    <OrderForm name="cart" price={subtotal} modal={isOpen} close={()=> setIsOpen(false)} order={order} />
   <div className="flex flex-col items-center w-full h-full">
   {/* cart header */}
   <div className="w-full h-12 text-lg font-bold text-white flex flex-row justify-center items-center p-2">

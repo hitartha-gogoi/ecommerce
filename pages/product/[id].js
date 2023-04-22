@@ -133,7 +133,7 @@ export default function Product(){
     <main className="w-screen h-screen bg-white">
     <Navbar />
     <CheckAuthPopup open={isLoggedIn} close={()=> setLoggedIn(true)} />
-   <OrderForm modal={isOpen} close={()=> setIsOpen(false)} order={order} />
+   <OrderForm modal={isOpen} name={product.name} price={product.price} close={()=> setIsOpen(false)} order={order} />
     <div className="flex flex-col items-center flex-wrap w-full pb-2">
   <div className="flex flex-row justify-evenly flex-wrap w-full md:mt-12 items-center">
     <div>

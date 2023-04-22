@@ -5,39 +5,47 @@ import { ref, getDownloadURL, uploadBytesResumable } from "firebase/storage"
 import { collection, doc, addDoc, serverTimestamp } from "firebase/firestore"
 import useRazorpay from "react-razorpay";
 
-export default function OrderForm({ modal, close, order }){
+export default function OrderForm({ modal, close, order, name, price }){
   if(!modal) return;
- const Razorpay = useRazorpay();
+  const baseUrl = 'http://localhost:3000'
+  const Razorpay = useRazorpay();
   const cat = useRef()
   const [ address, setAddress ] = useState("");
   const [ pincode, setPinCode ] = useState("");
   const [ phoneNumber, setPhoneNumber ] = useState(0);
   let state = useRef();
+  let deliveryType = useRef()
   
-  const handlePayment = async (e,params) => {
-   e.preventDefault
-  const payment = await createOrder(params); //  Create order on your backend
-
+  const handlePayment = async (e) => {
+   e.preventDefault()
+   if(deliveryType.current.options[deliveryType.current.selectedIndex].text === "Credit/Debit Card"){
+   const response = await fetch(`${baseUrl}/api/payment`, {
+     method: "POST", 
+     headers: {
+       'authorization': `bearer ${auth.currentUser.uid}`,
+       'Content-Type': 'application/json'
+     },
+     body: JSON.stringify({ name: name, amount: price })
+   })
+  const payment = await response.json()
   const options = {
-    key: "rzp_test_RupIFQwNDkYWvg", // Enter the Key ID generated from the Dashboard
-    amount: "50000", // Amount is in currency subunits. Default currency is INR. Hence, 50000 refers to 50000 paise
+    key: "rzp_test_ngx1siyaSSVYJ9", 
+    amount: price, 
     currency: "INR",
-    name: "Acme Corp",
+    name: name,
     description: "Test Transaction",
     image: "https://example.com/your_logo",
-    order_id: payment.id, //This is a sample Order ID. Pass the `id` obtained in the response of createOrder().
+    order_id: payment.id,
     handler: function (response) {
-      alert(response.razorpay_payment_id);
-      alert(response.razorpay_order_id);
-      alert(response.razorpay_signature);
+     console.log(response.razorpay_payment_id,response.razorpay_order_id, response.razorpay_signature);
     },
     prefill: {
-      name: "Piyush Garg",
-      email: "youremail@example.com",
-      contact: "9999999999",
+      name: auth.currentUser.displayName,
+      email: auth.currentUser.email,
+      contact: phoneNumber,
     },
     notes: {
-      address: "Razorpay Corporate Office",
+      address: address,
     },
     theme: {
       color: "#3399cc",
@@ -54,16 +62,17 @@ export default function OrderForm({ modal, close, order }){
     alert(response.error.reason);
     alert(response.error.metadata.order_id);
     alert(response.error.metadata.payment_id);
-  });
+  })
 
-  rzp1.open();
-};
-  
-  const submitForm = (e)=>{
-    e.preventDefault();
-    order(address,state.current.options[state.current.selectedIndex].text,pincode,phoneNumber)
+  rzp1.open()
+  //.then()
+  order(address,state.current.options[state.current.selectedIndex].text,pincode,phoneNumber)
     close();
-  } 
+   } else {
+     order(address,state.current.options[state.current.selectedIndex].text,pincode,phoneNumber)
+    close();
+   }
+};
   
   return(
           <div className="fixed top-0 left-0 right-0 bottom-0 backdrop-brightness-50 z-50 flex justify-center items-center ">
@@ -82,12 +91,17 @@ export default function OrderForm({ modal, close, order }){
           <input value={phoneNumber} onChange={(e)=> setPhoneNumber(e.target.value)} className="text-gray-400 rounded shadow bg-gray-100 appearance-none text-md border border-gray-300 w-5/5 h-8 mx-2 focus:outline-none focus:shadow-outline focus:border-purple-500 leading-tight" />
         <h3 className="text-black text-md font-semibold m-2">State</h3>
         <select ref={state} className="text-lg text-black font-semibold rounded border-gray-300 border bg-gray-100 focus:border-purple-500 m-2">
-          <option value="1">Assam </option>
+          <option value="1">Assam</option>
           <option value="2">Maharashtra</option>
           <option value="3">Rajasthan </option>
         </select>
-        <button onClick={handlePayment} id="title" className="text-center h-8 w-4/5 my-4 bg-purple-700 text-white font-extrabold text-lg rounded flex juçstify-center items-center shadow-2xl self-center hover:scale-105 transition-all ease-in-out duration-150"> pay now </button>
-         <button type="submit" id="title" className="text-center h-8 w-4/5 my-4 bg-purple-700 text-white font-extrabold text-lg rounded flex justify-center items-center shadow-2xl self-center hover:scale-105 transition-all ease-in-out duration-150"> Order Now </button>
+        <h3 className="text-black text-md font-semibold m-2">Payment method</h3>
+        <select ref={deliveryType} className="text-md text-black font-medium rounded border-gray-300 border bg-gray-100 focus:border-purple-500 m-2">
+          <option value="Credit/Debit Card">Credit/Debit Card</option>
+          <option value="COD">Cash on delivery</option>
+        </select>
+        
+         <button onClick={handlePayment} type="submit" id="title" className="text-center h-8 w-4/5 my-4 bg-purple-700 text-white font-extrabold text-lg rounded flex justify-center items-center shadow-2xl self-center hover:scale-105 transition-all ease-in-out duration-150"> Order Now </button>
           </form>
           </div>
         </div>
