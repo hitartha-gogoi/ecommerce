@@ -105,14 +105,16 @@ export default function Modal({ open, close }){
       <span className="material-symbols-outlined">logout</span> Sign In using Google </button>
       </>
       }
+      {loggedIn ?
       {!seller ?
       <button onClick={()=> router.push("/bio")} className="flex flex-row justify-center items-center text-white text-center font-bold bg-black h-10 w-60 mt-2 rounded-lg border-gray-700 border hover:scale-105 transition-all ease-in-out duration-150">
       <span  className="material-symbols-outlined">support_agent</span> Become a seller </button>
       :
       <button onClick={()=> router.push("/seller?id=1")} className="flex flex-row justify-center items-center text-white text-center font-bold bg-black h-10 w-60 mt-2 rounded-lg border-gray-700 border hover:scale-105 transition-all ease-in-out duration-150">
       <span  className="material-symbols-outlined">support_agent</span> Seller's dashboard </button>
+      } :
+      <span />
       }
-      
   </div>  
   
 </div>
