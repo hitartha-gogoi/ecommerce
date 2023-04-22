@@ -16,11 +16,13 @@ export default function Bio() {
   
   const [ open, setOpen ] = useState(false)
   const [ isLoggedIn, setLoggedIn ] = useState(true)
+  const [ authId, setAuthId ] = useState("")
     
  const checkAuth = ()=>{
    onAuthStateChanged(auth, (client) => {
       if (client) {
       console.log(client)
+      setAuthId(client.uid)
       setLoggedIn(true)
       } else {
         setLoggedIn(false)
@@ -38,7 +40,7 @@ export default function Bio() {
     <main className="bg-white h-screen w-screen">
    <Navbar />
    <CheckAuthPopup open={isLoggedIn} close={()=> setLoggedIn(true)} />
-   <BecomeSellerModal modal={open} close={()=> setOpen(false)} forward={()=> router.push("/seller")} />
+   <BecomeSellerModal modal={open} authId={authId} close={()=> setOpen(false)} forward={()=> router.push("/seller")} />
       <div className="flex flex-col justify-center items-center w-screen h-screen bg-white mt-72 pt-96 md:mt-2">
       
       

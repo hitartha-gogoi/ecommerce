@@ -5,6 +5,7 @@ import { Line } from 'react-chartjs-2';
 import { useRouter } from "next/router"
 import CheckAuthPopup from "../components/checkAuthPopup"
 import { onAuthStateChanged } from "firebase/auth";
+import { db, auth } from "../components/firebase"
 
 import {
   Chart as ChartJS,

@@ -2,13 +2,13 @@ import Link from "next/link";
 import { db, auth } from "./firebase"
 import { getDocs, collection, query, where, doc, setDoc } from "firebase/firestore";
 
-export default function BecomeSellerModal({ modal, close, forward }){
+export default function BecomeSellerModal({ modal, close, authId, forward }){
   if(!modal) return;
  
   const submitForm = (e)=>{
     e.preventDefault();
     
-    setDoc(doc(db, "users", auth.currentUser.uid), { 
+    setDoc(doc(db, "users", authId), { 
         type: "seller"
       }, { merge: true })
       .then(res =>{ 
@@ -17,7 +17,7 @@ export default function BecomeSellerModal({ modal, close, forward }){
         close();
       })
       .catch(err => console.log(err));
-  } 
+  }
   
   return(
           <div className="fixed top-0 left-0 right-0 bottom-0 backdrop-brightness-50 z-50 flex justify-center items-center ">
