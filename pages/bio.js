@@ -28,6 +28,10 @@ export default function Bio() {
       }
     })
  }
+ 
+ useEffect(()=>{
+    checkAuth();
+  },[])
   
   
   return (

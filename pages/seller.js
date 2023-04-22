@@ -59,6 +59,10 @@ export default function Seller(){
     })
  }
   
+  useEffect(()=>{
+    checkAuth();
+  },[])
+  
   let labels = ["Jan","Feb","Mar","Apr", "May","June","July"]
  const data = {
   labels,
