@@ -6,7 +6,9 @@ import{ onAuthStateChanged } from "firebase/auth";
 import { db, auth } from "../../components/firebase"
 import CheckAuthPopup from "../../components/checkAuthPopup"
 import OrderForm from "../../components/orderForm"
-import { collection, getDoc, getDocs, doc, addDoc, documentId, where, query, updateDoc, setDoc, deleteDoc, serverTimestamp } from "firebase/firestore"
+import { collection, getDoc, getDocs, doc, addDoc, documentId, where, query, updateDoc, setDoc, deleteDoc, getCountFromServer, serverTimestamp } from "firebase/firestore"
+import  SendIcon from "@mui/icons-material/Send"
+import SearchIcon from "@heroicons/react"
 
 export default function Product(){
   
@@ -17,7 +19,11 @@ export default function Product(){
   const [ status, setStatus ] = useState("dispatching your product");
   const [ isOpen, setIsOpen ] = useState(false)
   const [ isLoggedIn, setLoggedIn ] = useState(true)
+  const [ review, setReview ] = useState("")
+  const [ reviews, setReviews ] = useState([])
+  const [ star, setStar ] = useState(5)
   let existingCartItem = false;
+  const [ existingOrderedItem, setExistingOrderedItem ] = useState(false)
   
  const checkAuth = ()=>{
    onAuthStateChanged(auth, (client) => {
@@ -26,6 +32,8 @@ export default function Product(){
       setLoggedIn(true)
       firebaseGetProduct(id);
       firebaseFindProducts(category);
+      getReviews();
+      checkProductOrder();
       } else {
         setLoggedIn(false)
         console.log("user is logged out", isLoggedIn)
@@ -118,10 +126,62 @@ export default function Product(){
     router.push("/orders")
   }
   
+async function addReview(e){
+  e.preventDefault();
+  const docSnap = await addDoc(collection(db, 'reviews'), {
+        product: id,
+        user: auth.currentUser.uid,
+        seller: product.seller,
+        review: review,
+        stars: star,
+        username: auth.currentUser.displayName,
+        pfp: auth.currentUser.photoURL,
+        timestamp: serverTimestamp(),
+      })
+   console.log(docSnap.id)
+   setReview("")
+   setReviews([])
+   getReviews()
+}
+
+async function getReviews(){
+    let q = query(collection(db, "reviews"), where("product", "==", id));
+    let items = await getDocs(q)
+    items.forEach((item) => {
+      console.log(item.data().product, id)
+      let newReview = { id: item.id, data: item.data() }
+      setReviews(allReviews => [...allReviews, newReview ])
+     })
+  }
+async function checkProductOrder(){
+    let q = query(collection(db, "orders"), where("user", "==", auth.currentUser.uid), where("product", "==", id))
+    let items = await getCountFromServer(q)
+    
+    if(items.data().count == 0){
+      setExistingOrderedItem(false)
+    } else {
+      setExistingOrderedItem(true)
+    }
+  }
+  
+  async function deleteReview(reviewId){
+    let q = query(collection(db, "reviews"), where(documentId(), "==", reviewId))
+    let reviewSnap = await getDocs(q)
+    reviewSnap.forEach(item =>{
+        deleteDoc(doc(db, "reviews", item?.id))
+        .then(result =>{
+          console.log(result)
+          setReviews([])
+          getReviews()
+        })
+        .catch(err => console.log(err))
+    })
+  }
   
   
   useEffect(()=>{
     if(!router.isReady) return;
+    setReviews([])
     checkAuth();
   },[id])
   
@@ -145,7 +205,7 @@ export default function Product(){
     <span className="text-left text-xl font-bold text-black">{product.name}</span>
     <span className="text-left text-black font-bold text-lg">{product.price} <span className="font-light line-through">{product.discount}</span></span>
     </div>
-  
+
   
   <div className="flex flex-row">
       <span className="material-symbols-outlined hover:scale-125 transition-all ease-in-out duration-150">
@@ -182,22 +242,67 @@ export default function Product(){
   <h1 className="font-bold text-xl mt-2 mb-2 bg-white text-black">More products</h1>
   </div>
   <div className="flex flex-row justify-evenly w-full md:w-4/5 overflow-x-scroll p-4 bg-white">
-  
   {products.map(item =>{
     return(
     <div className="flex flex-col justify-evenly items-center hover:scale-105 transition-all ease-in-out duration-150 border-2 border-gray-700 p-2 rounded-lg bg-gray-100 ml-2 mr-2">
         <img onClick={()=> redirectToProduct(item.id, item.data.category)} src={item.data.photo} className="object-contain h-36 w-36 mb-2 rounded-lg" />
        <div className="flex flex-col">
          <span onClick={()=> redirectToProduct(item.id)} className="text-left font-bold text-md text-black">{item.data.name}</span>
-         <span onClick={()=> redirectToProduct(item.id)} className="text-left text-black text-sm">{item.data.discount} <span className="font-light line-through">{item.data.price}</span></span>
+         <span onClick={()=> redirectToProduct(item.id)} className="text-left text-black text-sm">{item.data.discount} <span className="font-light line-through">{item.data.discount}</span></span>
   
          <button onClick={()=> addToCart(item.id, item.data.name, item.data.photo, item.data.discount, item.data.category)} className="text-white text-center font-bold bg-black h-10 w-32 rounded-lg mr-2 mt-4 hover:scale-105 transition-all ease-in-out duration-150">add to cart</button>
        </div>
     </div>
   )
   })}
-  
     </div>
+    
+    
+    {/* reviews */}
+  <div className="flex flex-col  w-4/5 md:ml-10 mb-4 md:mt-6 bg-white">
+  <h1 className="font-bold text-xl mt-2 mb-2 bg-white text-black">Reviews</h1>
+  </div>
+  {!existingOrderedItem ? <div /> :
+  <form onSubmit={addReview} className="flex justify-evenly w-4/5">
+  <input value={review} onChange={(e)=> setReview(e.target.value)} className="bg-gray-50 black w-4/5 pl-10 sm:text-sm border-black  focus:border-white  rounded-md h-8" />
+  <SendIcon onClick={addReview} />
+  </form>
+  }
+ <div className="flex flex-col justify-evenly w-full md:w-4/5  p-4 bg-white">
+ {reviews.map((item) =>{
+   return(
+  <div className="flex flex-col justify-start flex-wrap hover:scale-105 transition-all ease-in-out duration-150 border border-gray-700 p-2 rounded-lg bg-gray-100 mt-2 mb-2">
+  <div className="flex flex-row justify-between items-center">
+  <div className="flex flex-row justify-start items-center">
+  <img src={item.data.pfp} className="rounded-full w-14 h-14" />
+  <div className="flex flex-col justify-start">
+  <span className="text-left font-bold text-md text-black ml-6">{item.data.username}</span>
+  <div className="flex flex-row ml-4">
+    <span className="material-symbols-outlined">
+      star
+    </span><span className="material-symbols-outlined">
+      star
+    </span><span className="material-symbols-outlined">
+      star
+    </span><span className="material-symbols-outlined">
+      star
+    </span><span className="material-symbols-outlined">
+      star
+    </span>
+  </div>
+  </div>
+  </div>
+ <span onClick={()=> deleteReview(item.id)} className="material-symbols-outlined hover:scale-125 transition-all ease-in-out duration-150">
+delete
+</span>
+  </div>
+  <p className="ml-20 w-40">{item.data.review}</p>
+  </div>
+  )
+ })}
+ 
+  </div>
+  
   </div>
   </main>
     )

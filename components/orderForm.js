@@ -7,7 +7,7 @@ import useRazorpay from "react-razorpay";
 
 export default function OrderForm({ modal, close, order, name, price }){
   if(!modal) return;
-  const baseUrl = 'https://ecommerce-js-junior.vercel.app'
+  const baseUrl = 'http://100.90.154.7:3000'
   const Razorpay = useRazorpay();
   const cat = useRef()
   const [ address, setAddress ] = useState("");
