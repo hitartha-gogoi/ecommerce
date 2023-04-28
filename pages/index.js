@@ -84,7 +84,7 @@ useEffect(()=>{
       <div className="flex flex-col justify-evenly items-center m-2 hover:scale-125 transition-all duration-150 ease-out">
       <img className="bg-white object-contain h-28 w-28 rounded-lg border border-black" src={item.data.photo} />
       <span id="rubik" className="text-lg font-bold">{item.data.name}</span>
-      <span className="text-sm font-bold text-left">${item.data.price}<span className="line-through text-sm font-light">${item.data.discount}</span></span>
+      <span className="text-sm font-bold text-left">₹{item.data.discount}<span className="line-through text-sm font-light">₹{item.data.price}</span></span>
       </div>
       </Link>
       )
@@ -103,7 +103,7 @@ useEffect(()=>{
       <div  className="flex flex-col justify-evenly items-center m-2 w-32 hover:scale-125 transition-all duration-150 ease-out">
       <img className="bg-white object-contain h-28 w-28 rounded-lg border border-black" src={item.data.photo} />
       <span id="rubik" className=" text-lg font-bold">{item.data.name}</span>
-      <span className="text-sm font-bold text-left">${item.data.price}<span className="line-through text-sm font-light">${item.data.discount}</span></span>
+      <span className="text-sm font-bold text-left">₹{item.data.discount}<span className="line-through text-sm font-light">₹{item.data.price}</span></span>
       </div>
       </Link>
       )
@@ -121,7 +121,7 @@ useEffect(()=>{
       <div  className="flex flex-col justify-evenly items-center m-2 w-32 hover:scale-125 transition-all duration-150 ease-out">
       <img className="bg-white object-contain h-28 w-28 rounded-lg border border-black" src={item.data.photo} />
       <span id="rubik" className="text-lg font-bold">{item.data.name}</span>
-      <span className="text-sm font-bold text-left">${item.data.price}<span className="line-through text-sm font-light">${item.data.discount}</span></span>
+      <span className="text-sm font-bold text-left">₹{item.data.discount}<span className="line-through text-sm font-light">₹{item.data.price}</span></span>
       </div>
       </Link>
       )
@@ -139,7 +139,7 @@ useEffect(()=>{
       <div  className="flex flex-col justify-evenly items-center w-32 m-2 hover:scale-125 transition-all duration-150 ease-out">
       <img className="bg-white object-contain h-28 w-28 rounded-lg border border-black" src={item.data.photo} />
       <span id="rubik" className="text-lg font-bold">{item.data.name}</span>
-      <span className="text-sm font-bold text-left">${item.data.price}<span className="line-through text-sm font-light">${item.data.discount}</span></span>
+      <span className="text-sm font-bold text-left">₹{item.data.discount}<span className="line-through text-sm font-light">₹{item.data.price}</span></span>
       </div>
       </Link>
       )

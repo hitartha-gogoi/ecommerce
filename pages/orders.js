@@ -71,7 +71,7 @@ export default function Orders() {
   
   {/* right box */}
   <div className="flex flex-col justify-evenly items-center w-24">
-  <span className="text-lg font-bold text-black">${item.data.total}</span>
+  <span className="text-lg font-bold text-black">₹{item.data.total}</span>
   <div className="flex flex-row justify-evenly">
   <span className="material-symbols-outlined hover:scale-125 transition-all ease-in-out duration-150 mr-2">
   edit_square

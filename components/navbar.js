@@ -1,6 +1,7 @@
 import Link from "next/link"
 import { useState, useEffect, useRef } from "react"
 import Modal from "../components/modal"
+import SearchIcon from "@mui/icons-material/Search"
 
 export default function Navbar(){
   
@@ -22,8 +23,8 @@ export default function Navbar(){
     </Link>
     </div>
     <div className="flex flex-row justify-evenly w-40">
-    <Link href="/">
-    <span className="material-symbols-outlined hover:scale-125 transition-all duration-150 ease-out">search</span>
+    <Link href="/search">
+    <SearchIcon className="material-symbols-outlined hover:scale-125 transition-all duration-150 ease-out" />
     </Link>
     <Link href="/cart">
     <span className="material-symbols-outlined hover:scale-125 transition-all duration-150 ease-out">shopping_cart</span>

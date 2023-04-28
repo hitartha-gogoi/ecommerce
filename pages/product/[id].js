@@ -6,9 +6,10 @@ import{ onAuthStateChanged } from "firebase/auth";
 import { db, auth } from "../../components/firebase"
 import CheckAuthPopup from "../../components/checkAuthPopup"
 import OrderForm from "../../components/orderForm"
-import { collection, getDoc, getDocs, doc, addDoc, documentId, where, query, updateDoc, setDoc, deleteDoc, getCountFromServer, serverTimestamp } from "firebase/firestore"
+import { collection, getDoc, getDocs, doc, addDoc, documentId, where, query, updateDoc, setDoc, deleteDoc, orderBy, getCountFromServer, serverTimestamp } from "firebase/firestore"
 import  SendIcon from "@mui/icons-material/Send"
 import SearchIcon from "@heroicons/react"
+import { Rating } from "@mui/material"
 
 export default function Product(){
   
@@ -21,7 +22,7 @@ export default function Product(){
   const [ isLoggedIn, setLoggedIn ] = useState(true)
   const [ review, setReview ] = useState("")
   const [ reviews, setReviews ] = useState([])
-  const [ star, setStar ] = useState(5)
+  const [ star, setStar ] = useState(0)
   let existingCartItem = false;
   const [ existingOrderedItem, setExistingOrderedItem ] = useState(false)
   
@@ -47,7 +48,6 @@ export default function Product(){
     let docSnap = await getDocs(q);
     docSnap.forEach(item =>{
       setProduct(item.data())
-      console.log(item.id)
     })
   }
   
@@ -145,10 +145,9 @@ async function addReview(e){
 }
 
 async function getReviews(){
-    let q = query(collection(db, "reviews"), where("product", "==", id));
+    let q = query(collection(db, "reviews"), where("product", "==", id), orderBy("timestamp", "desc"));
     let items = await getDocs(q)
     items.forEach((item) => {
-      console.log(item.data().product, id)
       let newReview = { id: item.id, data: item.data() }
       setReviews(allReviews => [...allReviews, newReview ])
      })
@@ -203,7 +202,7 @@ async function checkProductOrder(){
   <div className="flex flex-row justify-between w-84">
     <div className="flex flex-col">
     <span className="text-left text-xl font-bold text-black">{product.name}</span>
-    <span className="text-left text-black font-bold text-lg">{product.price} <span className="font-light line-through">{product.discount}</span></span>
+    <span className="text-left text-black font-bold text-lg">₹{product.discount} <span className="font-light line-through">₹{product.price}</span></span>
     </div>
 
   
@@ -248,7 +247,7 @@ async function checkProductOrder(){
         <img onClick={()=> redirectToProduct(item.id, item.data.category)} src={item.data.photo} className="object-contain h-36 w-36 mb-2 rounded-lg" />
        <div className="flex flex-col">
          <span onClick={()=> redirectToProduct(item.id)} className="text-left font-bold text-md text-black">{item.data.name}</span>
-         <span onClick={()=> redirectToProduct(item.id)} className="text-left text-black text-sm">{item.data.discount} <span className="font-light line-through">{item.data.discount}</span></span>
+         <span onClick={()=> redirectToProduct(item.id)} className="text-left text-black text-sm">₹{item.data.discount} <span className="font-light line-through">₹{item.data.price}</span></span>
   
          <button onClick={()=> addToCart(item.id, item.data.name, item.data.photo, item.data.discount, item.data.category)} className="text-white text-center font-bold bg-black h-10 w-32 rounded-lg mr-2 mt-4 hover:scale-105 transition-all ease-in-out duration-150">add to cart</button>
        </div>
@@ -263,9 +262,14 @@ async function checkProductOrder(){
   <h1 className="font-bold text-xl mt-2 mb-2 bg-white text-black">Reviews</h1>
   </div>
   {!existingOrderedItem ? <div /> :
-  <form onSubmit={addReview} className="flex justify-evenly w-4/5">
-  <input value={review} onChange={(e)=> setReview(e.target.value)} className="bg-gray-50 black w-4/5 pl-10 sm:text-sm border-black  focus:border-white  rounded-md h-8" />
+  <form onSubmit={addReview} className="flex flex-col justify-center  w-4/5">
+  <div className="w-4/5 flex justify-center scale-125 mb-4">
+  <Rating name="simple-controlled" value={star} onChange={(event, newValue)=> setStar(newValue)} />
+  </div>
+  <div className="flex justify-evenly w-4/5">
+  <input value={review} onChange={(e)=> setReview(e.target.value)} className="bg-gray-50 black w-4/5 pl-10 ml-6 sm:text-sm border-black  focus:border-white  rounded-md h-8" />
   <SendIcon onClick={addReview} />
+  </div>
   </form>
   }
  <div className="flex flex-col justify-evenly w-full md:w-4/5  p-4 bg-white">
@@ -278,23 +282,14 @@ async function checkProductOrder(){
   <div className="flex flex-col justify-start">
   <span className="text-left font-bold text-md text-black ml-6">{item.data.username}</span>
   <div className="flex flex-row ml-4">
-    <span className="material-symbols-outlined">
-      star
-    </span><span className="material-symbols-outlined">
-      star
-    </span><span className="material-symbols-outlined">
-      star
-    </span><span className="material-symbols-outlined">
-      star
-    </span><span className="material-symbols-outlined">
-      star
-    </span>
+  <Rating name="read-only" value={item.data.stars} readOnly />
   </div>
   </div>
   </div>
+  {item.data.user !== auth.currentUser.uid ? <span /> :
  <span onClick={()=> deleteReview(item.id)} className="material-symbols-outlined hover:scale-125 transition-all ease-in-out duration-150">
 delete
-</span>
+</span>}
   </div>
   <p className="ml-20 w-40">{item.data.review}</p>
   </div>

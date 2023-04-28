@@ -180,7 +180,7 @@ export default function Cart() {
   
  {/* right box */}
   <div className="flex flex-col items-center w-24 z-20">
-  <span className="text-lg font-bold text-black">{item.data.total}</span>
+  <span className="text-lg font-bold text-black">₹{item.data.total}</span>
   <div className="flex flex-row justify-evenly">
   <span onClick={()=> addToCart(item.data.product, item.data.name, item.data.photo, item.data.price, item.data.category)} className="material-symbols-outlined hover:scale-125 transition-all ease-in-out duration-150">
   add_circle
@@ -204,15 +204,15 @@ delete
         <span className="text-lg font-bold">Shipping</span>
       </div>
       <div className="flex flex-col items-center">
-        <span className="text-md font-light">{subtotal}</span>
-        <span className="text-md font-light">{deliveryCharge}</span>
+        <span className="text-md font-light">₹{subtotal}</span>
+        <span className="text-md font-light">₹{deliveryCharge}</span>
       </div>
  
     </div>
   </div>
   <div className="flex flex-row justify-between items-center w-72 p-2 border-b  border-gray-400">
     <span className="text-lg font-bold">Total</span>
-    <span className="text-md font-light">{subtotal}</span>
+    <span className="text-md font-light">₹{subtotal}</span>
   </div>
   
  {/* proceed to checkout */}
