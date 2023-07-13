@@ -4,11 +4,6 @@ import { getAuth } from "firebase/auth"
 import { getStorage } from "firebase/storage"
 import "dotenv/config"
 
-import { initializeApp } from 'firebase/app';
-import { getFirestore } from 'firebase/firestore';
-import { getAuth } from "firebase/auth"
-import { getStorage } from "firebase/storage"
-
 const firebaseConfig = {
   apiKey: "AIzaSyAAojj_Otfl09Xz7m6oSNWO9JGXbHawt2U",
   authDomain: "portfolio-f02ed.firebaseapp.com",
