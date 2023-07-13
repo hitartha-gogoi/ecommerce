@@ -112,6 +112,7 @@ export default function Product(){
     const customerRef = await getDoc(doc(db, "users", auth.currentUser.email))
     const seller = sellerRef.data()
     const customer = customerRef.data();
+    router.push("/orders")
       if(window.Email){
        await window.Email.send({
           SecureToken: "c5ab9116-48a2-4f13-b0c6-dacf50baeba7",
@@ -123,7 +124,7 @@ export default function Product(){
         .catch(error => console.log(error))
       }
    // alert("order completed")
-    router.push("/orders")
+    
   }
   
 async function addReview(e){
