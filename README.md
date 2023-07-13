@@ -1,2 +1,2 @@
-An [`e-commerce`] app built using Next.JS, (https://ecommerce-js-junior.vercel.app/).
+An [`e-commerce`](https://ecommerce-js-junior.vercel.app/) app built using Next.JS.
 ## e-commerce app
