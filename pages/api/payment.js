@@ -1,9 +1,10 @@
 import Razorpay from "razorpay"
+import "dotenv/config"
 
 export default  function handler(req, res) {
 if(req.method == "POST"){
 const Razorpay = require('razorpay');
-var instance = new Razorpay({ key_id: 'rzp_test_ngx1siyaSSVYJ9', key_secret: 'SFMpppWlBL6M6swEpeoJXjHz' })
+var instance = new Razorpay({ key_id: process.env.KEY_ID, key_secret: process.env.KEY_SECRET })
 
 var options = {
   amount: req.body.amount * 100,  

@@ -5,7 +5,7 @@ import router, { useRouter } from "next/router"
 import{ onAuthStateChanged } from "firebase/auth";
 import { db, auth } from "../components/firebase"
 import CheckAuthPopup from "../components/checkAuthPopup"
-import { collection, getDoc, getDocs, doc, addDoc, documentId, where, query, updateDoc, setDoc, deleteDoc, serverTimestamp } from "firebase/firestore"
+import { collection, getDoc, getDocs, doc, addDoc, documentId, where, query, updateDoc, orderBy, startAt, endAt, setDoc, deleteDoc, serverTimestamp } from "firebase/firestore"
 import { AiOutlineSend } from "react-icons/fa"
 import  SendIcon from "@mui/icons-material/Send"
 import SearchIcon from "@mui/icons-material/Search"
@@ -34,11 +34,13 @@ export default function Search(){
   
   async function searchProducts(e){
     e.preventDefault();
-    let q = query(collection(db, "products"), where("seller", "==", auth.currentUser.uid))
+    setProducts([])
+    let q = query(collection(db, "products"), orderBy("name"), startAt(`%${searchTerm}%`), endAt(`${searchTerm}\uf8ff`))
     let items = await getDocs(q)
     items.forEach((item) => {
       let product = { id: item.id, data: item.data() }
       setProducts(products => [...products, product ])
+      console.log(item.data())
      });
   }
   
@@ -55,7 +57,7 @@ export default function Search(){
     
     {/* seach box */}
   <form onSubmit={searchProducts} className="flex justify-evenly items-center w-full mt-6 mb-6">
-  <input className="bg-gray-50 black w-4/5 pl-10 sm:text-sm border-black  focus:border-white  rounded-md h-8" />
+  <input value={searchTerm} onChange={(e)=> setSearchTerm(e. target.value)} className="bg-gray-50 black w-4/5 pl-10 sm:text-sm border-black  focus:border-white  rounded-md h-8" />
   <SearchIcon onClick={searchProducts} />
   </form>
   

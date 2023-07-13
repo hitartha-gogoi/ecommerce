@@ -26,6 +26,10 @@ yarn-error.log*
 
 # local env files
 .env*.local
+package-lock.json
+/components/becomeSellerModal.js
+/pages/bio.js
+/pages/seller.js
 
 # vercel
 .vercel
@@ -33,3 +37,4 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+

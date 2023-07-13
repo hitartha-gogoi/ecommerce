@@ -92,7 +92,7 @@ export default function Modal({ open, close }){
     <span id="username-span" className="font-bold text-lg mt-2">{user.displayName}</span> </> : <span />
     }
     <button className="flex flex-row justify-center items-center  text-white text-center font-bold bg-black h-10 w-60 mt-2 rounded-lg border-gray-700 border hover:scale-105 transition-all ease-in-out duration-150"><span className="material-symbols-outlined">settings</span> Settings</button>
-    <button className="flex flex-row justify-center items-center text-white text-center font-bold bg-black h-10 w-60 mt-2 rounded-lg border-gray-700 border hover:scale-105 transition-all ease-in-out duration-150">
+    <button onClick={()=> router.push("https://merchant.razorpay.com/policy/LjfjAWdqU9HLpI/terms")} className="flex flex-row justify-center items-center text-white text-center font-bold bg-black h-10 w-60 mt-2 rounded-lg border-gray-700 border hover:scale-105 transition-all ease-in-out duration-150">
       <span className="material-symbols-outlined">article</span> Privacy & Policy</button>
     <button className="flex flex-row justify-center items-center text-white text-center font-bold bg-black h-10 w-60 mt-2 rounded-lg border-gray-700 border hover:scale-105 transition-all ease-in-out duration-150">
       <span className="material-symbols-outlined">support_agent</span> Help & Support</button>
@@ -106,13 +106,13 @@ export default function Modal({ open, close }){
       </>
       }
     
-      {!seller ?
+      {/* !seller ?
       <button onClick={()=> router.push("/bio")} className="flex flex-row justify-center items-center text-white text-center font-bold bg-black h-10 w-60 mt-2 rounded-lg border-gray-700 border hover:scale-105 transition-all ease-in-out duration-150">
       <span  className="material-symbols-outlined">support_agent</span> Become a seller </button>
       :
       <button onClick={()=> router.push("/seller?id=1")} className="flex flex-row justify-center items-center text-white text-center font-bold bg-black h-10 w-60 mt-2 rounded-lg border-gray-700 border hover:scale-105 transition-all ease-in-out duration-150">
       <span  className="material-symbols-outlined">support_agent</span> Seller's dashboard </button>
-      } 
+     */  } 
   </div>  
   
 </div>
